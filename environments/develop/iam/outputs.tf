@@ -20,6 +20,11 @@ output "iam_group" {
   value       = module.iam_group.name_ocid
 }
 
+output "iam_policy" {
+  description = "group_policy_name"
+  value       = module.iam_group.group_policy_name
+}
+
 #output "iam_dynamic_group_name" {
 #  description = "dynamic group name and associated ocid"
 #  value       = module.iam_dynamic_group.name_ocid

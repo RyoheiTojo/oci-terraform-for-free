@@ -70,7 +70,8 @@ module "iam_group" {
   tenancy_ocid          = var.tenancy_ocid
   group_name            = "dev_admin"
   group_description     = "Admin group for development compartment."
-  user_ids              = [element(module.iam_users.user_id, 0), element(module.iam_users.user_id, 1), element(module.iam_users.user_id, 2)] # a list of user ocids
+  #user_ids              = [element(module.iam_users.user_id, 0), element(module.iam_users.user_id, 1), element(module.iam_users.user_id, 2)] # a list of user ocids
+  user_ids              = module.iam_users.user_id
   policy_name           = "dev_admin_policy"
   policy_compartment_id = module.iam_compartment.compartment_id
   policy_description    = "Admin policy for development compartment."
