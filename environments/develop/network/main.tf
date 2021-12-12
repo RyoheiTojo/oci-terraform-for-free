@@ -122,6 +122,20 @@ module "network-nsg" {
       stateless = false
       icmp_type = null
       icmp_code = null
+    },
+    rule005 = {
+      nsg_name  = "public-subnet-nsg"
+      direction = "INGRESS"
+      src_type  = "CIDR"
+      src       = "0.0.0.0/0"
+      protocol  = "ALL"
+      src_port  = null
+      dest_type = null
+      dest      = null
+      dest_port = null
+      stateless = false
+      icmp_type = null
+      icmp_code = null
     }
   }
 }
