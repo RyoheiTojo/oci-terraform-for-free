@@ -22,8 +22,8 @@ provider "oci" {
   region           = var.homeregion
 }
 
-module "vcn" {
-  source           = "../../../modules/vcn"
+module "network-vcn" {
+  source           = "../../../modules/network-vcn"
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = var.compartment_name
   vcn_cidr         = var.vcn_cidr
