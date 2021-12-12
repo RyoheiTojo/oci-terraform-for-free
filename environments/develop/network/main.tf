@@ -33,3 +33,22 @@ module "network-vcn" {
   freeform_tags    = var.freeform_tags
   vcn_name         = var.vcn_name
 }
+
+module "network-subnets" {
+  source           = "../../../modules/network-subnet"
+  subnets = {
+    public_subnet = {
+      cidr_block    = "10.1.0.0/24",
+      display_name  = "public-subnet"
+      is_public     = true
+    },
+    private_subnet = {
+      cidr_block    = "10.1.1.0/24",
+      display_name  = "private-subnet"
+      is_public     = false
+    }
+  }
+  tenancy_ocid     = var.tenancy_ocid
+  compartment_name = "dev"
+  vcn_name         = "dev_vcn"
+}
