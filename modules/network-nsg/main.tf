@@ -20,3 +20,36 @@ resource "oci_core_network_security_group" "this" {
   display_name   = each.value.display_name
 }
 
+locals {
+  ingress_tcp = flatten([
+    for nsg in var.network_security_group_rules: [
+      for d in nsg.dest_port: {
+        nsg_name  = nsg.nsg_name
+        src_type  = nsg.src_type
+        src       = nsg.src
+        dest_port = {min: d.min, max: d.max}
+        stateless = nsg.stateless
+      } if nsg.direction == "INGRESS" && nsg.protocol == "TCP"
+    ]
+  ])
+}
+
+resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp" {
+  for_each   = {for r in local.ingress_tcp: "${r.nsg_name}-ingress-tcp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "INGRESS"
+  protocol                  = "6" # TCP
+  description               = "${each.value.nsg_name}-INGRESS-TCP-SOURCE-${each.value.dest_port.min}-${each.value.dest_port.max}"
+  source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  source                    = each.value.src
+  stateless                 = each.value.stateless
+
+  tcp_options {
+    destination_port_range {
+      min = each.value.dest_port.min
+      max = each.value.dest_port.max
+    }
+  }
+}

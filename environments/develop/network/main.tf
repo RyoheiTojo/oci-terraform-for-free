@@ -12,7 +12,7 @@ terraform {
   required_version = ">= 0.12"
   required_providers {
     oci = {
-      version = ">= 3.27, < 4.0" // force downloading oci-provider compatible with terraform v0.12
+      version = ">= 3.27"
     }
   }
 }
@@ -66,4 +66,21 @@ module "network-nsg" {
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = "dev"
   vcn_name         = "dev_vcn"
+  network_security_group_rules = {
+    rule001 = {
+      nsg_name  = "public-subnet-nsg"
+      direction = "INGRESS"
+      src_type  = "CIDR"
+      src       = "0.0.0.0/0"
+      protocol  = "TCP"
+      src_port  = null
+      dest_type = null
+      dest      = null
+      dest_port = [{min: 22, max: 22}]
+      stateless = false
+      icmp_type = null
+      icmp_code = null
+    }
+  }
 }
+
