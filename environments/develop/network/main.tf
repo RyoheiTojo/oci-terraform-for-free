@@ -52,3 +52,18 @@ module "network-subnets" {
   compartment_name = "dev"
   vcn_name         = "dev_vcn"
 }
+
+module "network-nsg" {
+  source           = "../../../modules/network-nsg"
+  network_security_groups = {
+    nsg001 = {
+      display_name  = "public-subnet-nsg"
+    },
+    nsg002 = {
+      display_name  = "private-subnet-nsg"
+    }
+  }
+  tenancy_ocid     = var.tenancy_ocid
+  compartment_name = "dev"
+  vcn_name         = "dev_vcn"
+}
