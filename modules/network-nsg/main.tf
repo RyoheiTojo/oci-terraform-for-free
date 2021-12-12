@@ -83,6 +83,19 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_all" {
   stateless                 = each.value.stateless
 }
 
+resource "oci_core_network_security_group_security_rule" "egress_rules_all" {
+  for_each   = {for k,v in var.network_security_group_rules: k => v if v.direction == "EGRESS" && v.protocol == "ALL"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "EGRESS"
+  protocol                  = "all"
+  description               = "${each.value.nsg_name}-to-${each.value.dest}-EGRESS-ALL"
+  destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
+  stateless                 = each.value.stateless
+}
+
 resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp" {
   for_each   = {for r in local.ingress_tcp: "${r.nsg_name}-ingress-tcp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
   depends_on = [ oci_core_network_security_group.this ]
