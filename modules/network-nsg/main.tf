@@ -68,6 +68,49 @@ locals {
       }
     ] if nsg.direction == "EGRESS" && nsg.protocol == "UDP"
   ])
+
+  icmp_all_type = flatten([
+    for nsg in var.network_security_group_rules: {
+      nsg_name     = nsg.nsg_name
+      direction    = nsg.direction
+      src_type     = nsg.src_type
+      src          = nsg.src
+      dest_type    = nsg.dest_type
+      dest         = nsg.dest
+      icmp_options = null
+      stateless    = nsg.stateless
+    } if nsg.protocol == "ICMP" && nsg.icmp_options == null
+  ])
+
+  icmp_only_type = flatten([
+    for nsg in var.network_security_group_rules: [
+      for i in nsg.icmp_options: {
+        nsg_name     = nsg.nsg_name
+        direction    = nsg.direction
+        src_type     = nsg.src_type
+        src          = nsg.src
+        dest_type    = nsg.dest_type
+        dest         = nsg.dest
+        icmp_options = {type: i.type, code: null}
+        stateless    = nsg.stateless
+      } if i.type != null && i.code == null
+    ] if nsg.protocol == "ICMP" && nsg.icmp_options != null
+  ])
+
+  icmp_type_with_code = flatten([
+    for nsg in var.network_security_group_rules: [
+      for i in nsg.icmp_options: {
+        nsg_name     = nsg.nsg_name
+        direction    = nsg.direction
+        src_type     = nsg.src_type
+        src          = nsg.src
+        dest_type    = nsg.dest_type
+        dest         = nsg.dest
+        icmp_options = {type: i.type, code: i.code}
+        stateless    = nsg.stateless
+      } if i.type != null && i.code != null
+    ] if nsg.protocol == "ICMP" && nsg.icmp_options != null
+  ])
 }
 
 resource "oci_core_network_security_group_security_rule" "ingress_rules_all" {
@@ -77,7 +120,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_all" {
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
   direction                 = "INGRESS"
   protocol                  = "all"
-  description               = "${each.value.src}-to-${each.value.nsg_name}-INGRESS-ALL"
+  description               = "[${each.value.src}]-to-[${each.value.nsg_name}]-INGRESS-ALL"
   source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
   source                    = each.value.src_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.src][0] : each.value.src
   stateless                 = each.value.stateless
@@ -90,20 +133,20 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_all" {
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
   direction                 = "EGRESS"
   protocol                  = "all"
-  description               = "${each.value.nsg_name}-to-${each.value.dest}-EGRESS-ALL"
+  description               = "[${each.value.nsg_name}]-to-[${each.value.dest}]-EGRESS-ALL"
   destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
   destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
   stateless                 = each.value.stateless
 }
 
 resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp" {
-  for_each   = {for r in local.ingress_tcp: "${r.nsg_name}-ingress-tcp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
+  for_each   = {for r in local.ingress_tcp: "${r.src}-to-${r.nsg_name}-ingress-tcp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
   depends_on = [ oci_core_network_security_group.this ]
 
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
   direction                 = "INGRESS"
   protocol                  = "6" # TCP
-  description               = "${each.value.src}-to-${each.value.nsg_name}-INGRESS-TCP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
+  description               = "[${each.value.src}]-to-[${each.value.nsg_name}]-INGRESS-TCP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
   source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
   source                    = each.value.src_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.src][0] : each.value.src
   stateless                 = each.value.stateless
@@ -117,13 +160,13 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_tcp" {
 }
 
 resource "oci_core_network_security_group_security_rule" "egress_rules_tcp" {
-  for_each   = {for r in local.egress_tcp: "${r.nsg_name}-egress-tcp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
+  for_each   = {for r in local.egress_tcp: "${r.nsg_name}-to-${r.dest}-egress-tcp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
   depends_on = [ oci_core_network_security_group.this ]
 
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
   direction                 = "EGRESS"
   protocol                  = "6" # TCP
-  description               = "${each.value.nsg_name}-to-${each.value.dest}-EGRESS-TCP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
+  description               = "[${each.value.nsg_name}]-to-[${each.value.dest}]-EGRESS-TCP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
   destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
   destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
   stateless                 = each.value.stateless
@@ -137,13 +180,13 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_tcp" {
 }
 
 resource "oci_core_network_security_group_security_rule" "ingress_rules_udp" {
-  for_each   = {for r in local.ingress_udp: "${r.nsg_name}-ingress-udp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
+  for_each   = {for r in local.ingress_udp: "${r.src}-to-${r.nsg_name}-ingress-udp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
   depends_on = [ oci_core_network_security_group.this ]
 
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
   direction                 = "INGRESS"
   protocol                  = "17" # UDP
-  description               = "${each.value.src}-to-${each.value.nsg_name}-INGRESS-UDP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
+  description               = "[${each.value.src}]-to-[${each.value.nsg_name}]-INGRESS-UDP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
   source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
   source                    = each.value.src_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.src][0] : each.value.src
   stateless                 = each.value.stateless
@@ -157,13 +200,13 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_udp" {
 }
 
 resource "oci_core_network_security_group_security_rule" "egress_rules_udp" {
-  for_each   = {for r in local.egress_udp: "${r.nsg_name}-egress-udp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
+  for_each   = {for r in local.egress_udp: "${r.nsg_name}-to-${r.dest}-egress-udp-dest_${r.dest_port.min}to${r.dest_port.max}" => r}
   depends_on = [ oci_core_network_security_group.this ]
 
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
   direction                 = "EGRESS"
   protocol                  = "17" # UDP
-  description               = "${each.value.nsg_name}-to-${each.value.dest}-EGRESS-UDP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
+  description               = "[${each.value.nsg_name}]-to-[${each.value.dest}]-EGRESS-UDP-DEST(${each.value.dest_port.min}-${each.value.dest_port.max})"
   destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
   destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
   stateless                 = each.value.stateless
@@ -175,3 +218,100 @@ resource "oci_core_network_security_group_security_rule" "egress_rules_udp" {
     }
   }
 }
+
+resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp" {
+  for_each   = {for r in local.icmp_all_type: "${r.src}-to-${r.nsg_name}-ingress-icmp-all" => r if r.direction == "INGRESS"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "INGRESS"
+  protocol                  = "1" # ICMP
+  description               = "[${each.value.src}]-to-[${each.value.nsg_name}]-INGRESS-ICMP-ALL"
+  source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  source                    = each.value.src_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.src][0] : each.value.src
+  stateless                 = each.value.stateless
+}
+
+resource "oci_core_network_security_group_security_rule" "egress_rules_icmp" {
+  for_each   = {for r in local.icmp_all_type: "${r.nsg_name}-to-${r.dest}-egress-icmp-all" => r if r.direction == "EGRESS"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "EGRESS"
+  protocol                  = "1" # ICMP
+  description               = "[${each.value.nsg_name}]-to-[${each.value.dest}]-EGRESS-ICMP-ALL"
+  destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
+  stateless                 = each.value.stateless
+}
+
+resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_with_type" {
+  for_each   = {for r in local.icmp_only_type: "${r.src}-to-${r.nsg_name}-ingress-icmp-type${r.icmp_options.type}" => r if r.direction == "INGRESS"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "INGRESS"
+  protocol                  = "1" # ICMP
+  description               = "[${each.value.src}]-to-[${each.value.nsg_name}]-INGRESS-ICMP-type${each.value.icmp_options.type}"
+  source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  source                    = each.value.src_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.src][0] : each.value.src
+  stateless                 = each.value.stateless
+  
+  icmp_options {
+    type = each.value.icmp_options.type
+  }
+}
+
+resource "oci_core_network_security_group_security_rule" "egress_rules_icmp_with_type" {
+  for_each   = {for r in local.icmp_only_type: "${r.nsg_name}-to-${r.dest}-egress-icmp-type${r.icmp_options.type}" => r if r.direction == "EGRESS"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "EGRESS"
+  protocol                  = "1" # ICMP
+  description               = "[${each.value.nsg_name}]-to-[${each.value.dest}]-EGRESS-ICMP-type${each.value.icmp_options.type}"
+  destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
+  stateless                 = each.value.stateless
+
+  icmp_options {
+    type = each.value.icmp_options.type
+  }
+}
+
+resource "oci_core_network_security_group_security_rule" "ingress_rules_icmp_with_type_and_code" {
+  for_each   = {for r in local.icmp_type_with_code: "${r.src}-to-${r.nsg_name}-ingress-icmp-type${r.icmp_options.type}-code${r.icmp_options.code}" => r if r.direction == "INGRESS"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "INGRESS"
+  protocol                  = "1" # ICMP
+  description               = "[${each.value.src}]-to-[${each.value.nsg_name}]-INGRESS-ICMP-type${each.value.icmp_options.type}-code${each.value.icmp_options.code}"
+  source_type               = each.value.src_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  source                    = each.value.src_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.src][0] : each.value.src
+  stateless                 = each.value.stateless
+  
+  icmp_options {
+    type = each.value.icmp_options.type
+    code = each.value.icmp_options.code
+  }
+}
+
+resource "oci_core_network_security_group_security_rule" "egress_rules_icmp_with_type_and_code" {
+  for_each   = {for r in local.icmp_type_with_code: "${r.nsg_name}-to-${r.dest}-egress-icmp-type${r.icmp_options.type}-code${r.icmp_options.code}" => r if r.direction == "EGRESS"}
+  depends_on = [ oci_core_network_security_group.this ]
+
+  network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
+  direction                 = "EGRESS"
+  protocol                  = "1" # ICMP
+  description               = "[${each.value.nsg_name}]-to-[${each.value.dest}]-EGRESS-ICMP-type${each.value.icmp_options.type}-code${each.value.icmp_options.code}"
+  destination_type          = each.value.dest_type == "NSG" ? "NETWORK_SECURITY_GROUP" : "CIDR_BLOCK"
+  destination               = each.value.dest_type == "NSG" ? [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.dest][0] : each.value.dest
+  stateless                 = each.value.stateless
+
+  icmp_options {
+    type = each.value.icmp_options.type
+    code = each.value.icmp_options.code
+  }
+}
+

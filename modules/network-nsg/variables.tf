@@ -46,24 +46,25 @@ variable "network_security_group_rules" {
       max = number,
     })),
     stateless = bool,
-    icmp_type = number,
-    icmp_code = number,
+    icmp_options = list(object({
+      type = number,
+      code = number,
+    })),
   }))
   description  = "Parameters for each nsg rule to be created/managed."
   default      = {
     default_nsg = {
-      nsg_name  = null
-      direction = null
-      src_type  = null
-      src       = null
-      protocol  = null
-      src_port  = []
-      dest_type = null
-      dest      = null
-      dest_port = [ ]
-      stateless = false
-      icmp_type = null
-      icmp_code = null
+      nsg_name     = null
+      direction    = null
+      src_type     = null
+      src          = null
+      protocol     = null
+      src_port     = []
+      dest_type    = null
+      dest         = null
+      dest_port    = [ ]
+      stateless    = false
+      icmp_options = null
     }
   }
 }
