@@ -16,22 +16,38 @@ variable "ad_num" {
   default     = 0 # You can choose between 0 and 2.
 }
 
+variable "ssh_authorized_keys" {
+  type        = string
+  description = "Public key for ssh"
+  default     = null
+}
+
+variable "user_data" {
+  type        = string
+  description = "Userdata"
+  default     = null
+}
+
 variable "instances" {
   type = map(object({
-    display_name = string,
-    shape        = string,
-    subnet_name  = string, # Note: subnet's display_name has to be unique. consider alternative key.
-    src_type     = string,
-    src_id       = string,
+    display_name     = string,
+    assign_public_ip = bool,
+    fd_num           = number, # You can choose between 0 and 2 or null.
+    shape            = string,
+    subnet_name      = string, # Note: subnet's display_name has to be unique. consider alternative key.
+    src_type         = string,
+    src_id           = string,
   }))
   description = "Information of instances you want to create."
   default     = {
     default_instance = {
-      display_name   = null
-      shape          = null
-      subnet_name    = null
-      src_type       = null
-      src_id         = null
+      display_name     = null
+      assign_public_ip = false
+      fd_num           = null
+      shape            = null
+      subnet_name      = null
+      src_type         = null
+      src_id           = null
     }
   }
 }

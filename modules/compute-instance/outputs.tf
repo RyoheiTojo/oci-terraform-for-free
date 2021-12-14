@@ -12,3 +12,8 @@ output "compartments" {
   description = "Compartments"
   value = data.oci_identity_compartments.this.compartments
 }
+
+output "fds" {
+  description = "Fault domains"
+  value = data.oci_identity_fault_domains.this.fault_domains
+}
