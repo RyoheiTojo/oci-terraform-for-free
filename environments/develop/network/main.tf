@@ -7,6 +7,7 @@ variable "vcn_dns_label" {}
 variable "enable_ipv6" {}
 variable "freeform_tags" {}
 variable "vcn_name" {}
+variable "internet_gateway_name" {}
 
 terraform {
   required_version = ">= 0.12"
@@ -83,3 +84,11 @@ module "network-nsg" {
   }
 }
 
+module "network-internetgateway" {
+  source           = "../../../modules/network-internetgateway"
+
+  tenancy_ocid          = var.tenancy_ocid
+  compartment_name      = var.compartment_name
+  vcn_name              = var.vcn_name
+  internet_gateway_name = var.internet_gateway_name
+}
