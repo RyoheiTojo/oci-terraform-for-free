@@ -17,3 +17,8 @@ output "fds" {
   description = "Fault domains"
   value = data.oci_identity_fault_domains.this.fault_domains
 }
+
+output "nsgs" {
+  description = "Network security groups"
+  value = data.oci_core_network_security_groups.this.network_security_groups
+}

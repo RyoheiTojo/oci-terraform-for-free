@@ -1,3 +1,8 @@
+data "oci_core_network_security_groups" "this" {
+  compartment_id = data.oci_identity_compartments.this.compartments[0].id
+  vcn_id         = data.oci_core_vcns.this.virtual_networks[0].id
+}
+
 data "oci_identity_fault_domains" "this" {
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[var.ad_num].name
   compartment_id = data.oci_identity_compartments.this.compartments[0].id
@@ -44,6 +49,7 @@ resource "oci_core_instance" "this" {
   create_vnic_details {
     subnet_id        = [for s in data.oci_core_subnets.this.subnets: s.id if s.display_name == each.value.subnet_name][0]
     assign_public_ip = each.value.assign_public_ip
+    nsg_ids          = [for nsg in data.oci_core_network_security_groups.this.network_security_groups: nsg.id if contains(each.value.nsgs, nsg.display_name)]
   }
 
   source_details {

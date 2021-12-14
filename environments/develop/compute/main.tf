@@ -33,6 +33,7 @@ module "compute-instance" {
       assign_public_ip = true
       fd_num           = null # Feeling lucky.
       shape            = "VM.Standard.E2.1.Micro" # Free (Note: Check the 'Limits, Quotas and Usage' to see where you deploy this shape.)
+      nsgs             = ["public-subnet-nsg"]
       subnet_name      = "public-subnet"
       src_type         = "image"
       src_id           = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)

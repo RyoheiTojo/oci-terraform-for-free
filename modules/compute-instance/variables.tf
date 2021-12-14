@@ -34,6 +34,7 @@ variable "instances" {
     assign_public_ip = bool,
     fd_num           = number, # You can choose between 0 and 2 or null.
     shape            = string,
+    nsgs             = list(string),
     subnet_name      = string, # Note: subnet's display_name has to be unique. consider alternative key.
     src_type         = string,
     src_id           = string,
@@ -45,6 +46,7 @@ variable "instances" {
       assign_public_ip = false
       fd_num           = null
       shape            = null
+      nsgs             = []
       subnet_name      = null
       src_type         = null
       src_id           = null
