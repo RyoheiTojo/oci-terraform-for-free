@@ -31,3 +31,9 @@ variable "subnets" {
     }
   }
 }
+
+variable "route_table_id" {
+  type = string
+  description = "Route table ID"
+  default = null
+}

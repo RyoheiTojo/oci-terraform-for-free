@@ -8,6 +8,8 @@ variable "enable_ipv6" {}
 variable "freeform_tags" {}
 variable "vcn_name" {}
 variable "internet_gateway_name" {}
+variable "has_internet_gateway" {}
+variable "routetable_name" {}
 
 terraform {
   required_version = ">= 0.12"
@@ -52,6 +54,7 @@ module "network-subnets" {
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = "dev"
   vcn_name         = "dev_vcn"
+  route_table_id   = module.network-routetable.route_table_id
 }
 
 module "network-nsg" {
@@ -91,4 +94,14 @@ module "network-internetgateway" {
   compartment_name      = var.compartment_name
   vcn_name              = var.vcn_name
   internet_gateway_name = var.internet_gateway_name
+}
+
+module "network-routetable" {
+  source           = "../../../modules/network-routetable"
+
+  tenancy_ocid          = var.tenancy_ocid
+  vcn_id                = module.network-vcn.vcn_id
+  compartment_name      = var.compartment_name
+  routetable_name       = var.routetable_name
+  internet_gateway_id   = var.has_internet_gateway ? module.network-internetgateway.internet_gateway_id : null
 }

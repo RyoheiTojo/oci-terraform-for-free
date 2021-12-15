@@ -7,3 +7,5 @@ enable_ipv6           = false
 freeform_tags         = {}
 vcn_name              = "dev_vcn"
 internet_gateway_name = "dev_internet_gateway"
+has_internet_gateway  = true
+routetable_name       = "dev_route_table"
