@@ -5,3 +5,11 @@ compartment = {
     name = "dev"
     description = "This compartment is for development."
     }
+
+users = [
+    {
+        name        = "dev_admin"
+        description = "Administrator for dev compartment."
+        email       = null
+        }
+    ]

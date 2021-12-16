@@ -4,14 +4,23 @@ variable "region" {}
 variable "homeregion" {}
 variable "compartment" {
   type = object({
-    name = string,
+    name        = string,
     description = string,
   })
   description = "Compartment definition"
   default = {
-    name = "default_compartment"
+    name        = "default_compartment"
     description = "This is default compartment."
   }
+}
+variable "users" {
+  type = list(object({
+    name        = string,
+    description = string,
+    email       = string,
+  }))
+  description = "Users definitions"
+  default = null
 }
 
 terraform {
@@ -41,13 +50,7 @@ module "iam_users" {
   source       = "../../../modules/iam-user"
 
   tenancy_ocid = var.tenancy_ocid
-  users = [
-    {
-      name        = "ryohei"
-      description = "user for ryohei"
-      email       = null
-    },
-  ]
+  users        = var.users
 }
 
 module "iam_group" {
