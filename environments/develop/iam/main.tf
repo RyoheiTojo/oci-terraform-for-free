@@ -34,8 +34,7 @@ module "iam_compartment" {
   compartment_id          = var.tenancy_ocid # define the parent compartment. Creation at tenancy root if omitted
   compartment_name        = var.compartment.name
   compartment_description = var.compartment.description
-  compartment_create      = true # if false, a data source with a matching name is created instead
-  enable_delete           = true # if false, on `terraform destroy`, compartment is deleted from the terraform state but not from oci 
+  enable_delete           = true
 }
 
 module "iam_users" {
@@ -58,7 +57,7 @@ module "iam_group" {
   group_description     = "Admin group for development compartment."
   user_ids              = module.iam_users.user_id
   policy_name           = "dev_admin_policy"
-  policy_compartment_id = module.iam_compartment.compartment_id
+  policy_compartment_id = module.iam_compartment.id
   policy_description    = "Admin policy for development compartment."
   policy_statements = [
     "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.compartment_name}",

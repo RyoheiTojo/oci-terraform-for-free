@@ -5,7 +5,7 @@ output "iam_compartment" {
   value = {
     name        = module.iam_compartment.compartment_name,
     description = module.iam_compartment.compartment_description,
-    ocid        = module.iam_compartment.compartment_id,
+    ocid        = module.iam_compartment.id,
     parent      = module.iam_compartment.parent_compartment_id
   }
 }
