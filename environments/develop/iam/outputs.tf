@@ -1,12 +1,10 @@
-// Copyright (c) 2018, 2021, Oracle and/or its affiliates.
-
 output "iam_compartment" {
-  description = "compartment name, description, ocid, and parent ocid"
+  description = "Compartment name, description, id, and compartment_id"
   value = {
-    name        = module.iam_compartment.compartment_name,
-    description = module.iam_compartment.compartment_description,
-    ocid        = module.iam_compartment.id,
-    parent      = module.iam_compartment.parent_compartment_id
+    name           = module.iam_compartment.name,
+    description    = module.iam_compartment.description,
+    id             = module.iam_compartment.id,
+    compartment_id = module.iam_compartment.compartment_id
   }
 }
 

@@ -60,7 +60,7 @@ module "iam_group" {
   policy_compartment_id = module.iam_compartment.id
   policy_description    = "Admin policy for development compartment."
   policy_statements = [
-    "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.compartment_name}",
+    "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.name}",
   ]
 }
 
