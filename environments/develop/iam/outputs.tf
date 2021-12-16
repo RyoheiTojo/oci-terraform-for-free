@@ -9,8 +9,8 @@ output "iam_compartment" {
 }
 
 output "iam_users" {
-  description = "list of username and associated ocid"
-  value       = module.iam_users.name_ocid
+  description = "List of users"
+  value       = module.iam_users.this
 }
 
 output "iam_group" {
