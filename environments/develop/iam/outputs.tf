@@ -1,11 +1,6 @@
 output "iam_compartment" {
-  description = "Compartment name, description, id, and compartment_id"
-  value = {
-    name           = module.iam_compartment.name,
-    description    = module.iam_compartment.description,
-    id             = module.iam_compartment.id,
-    compartment_id = module.iam_compartment.compartment_id
-  }
+  description = "Object of compartment"
+  value = module.iam_compartment.this
 }
 
 output "iam_users" {

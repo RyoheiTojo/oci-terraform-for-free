@@ -57,10 +57,10 @@ module "iam_group" {
   group_description     = "Admin group for development compartment."
   user_ids              = [for u in module.iam_users.this: u.id]
   policy_name           = "dev_admin_policy"
-  policy_compartment_id = module.iam_compartment.id
+  policy_compartment_id = module.iam_compartment.this.id
   policy_description    = "Admin policy for development compartment."
   policy_statements = [
-    "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.name}",
+    "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.this.name}",
   ]
 }
 
