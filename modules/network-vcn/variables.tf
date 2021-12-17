@@ -4,6 +4,20 @@ variable "tenancy_ocid" {
   default     = null
 }
 
+variable "vcn" {
+  type = object({
+    name             = string,
+    compartment_name = string,
+    cidr_block       = string,
+  })
+  description = "VCN"
+  default = {
+    name             = null
+    compartment_name = null
+    cidr_block       = null
+  }
+}
+
 variable "compartment_name" {
   type = string
   description = "The name to pick up filtering compartment for vcn config."

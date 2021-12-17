@@ -25,16 +25,25 @@ provider "oci" {
   region           = var.homeregion
 }
 
+variable "vcn" {
+  type = object({
+    name             = string,
+    compartment_name = string,
+    cidr_block       = string,
+  })
+  description = "VCN"
+  default = {
+    name             = null
+    compartment_name = null
+    cidr_block       = null
+  }
+}
+
 module "network-vcn" {
   source           = "../../../modules/network-vcn"
+
   tenancy_ocid     = var.tenancy_ocid
-  compartment_name = var.compartment_name
-  vcn_cidr         = var.vcn_cidr
-  vcn_dns_label    = var.vcn_dns_label
-  label_prefix     = var.label_prefix
-  enable_ipv6      = var.enable_ipv6
-  freeform_tags    = var.freeform_tags
-  vcn_name         = var.vcn_name
+  vcn              = var.vcn
 }
 
 module "network-subnets" {
@@ -100,7 +109,7 @@ module "network-routetable" {
   source           = "../../../modules/network-routetable"
 
   tenancy_ocid          = var.tenancy_ocid
-  vcn_id                = module.network-vcn.vcn_id
+  vcn_id                = module.network-vcn.this.id
   compartment_name      = var.compartment_name
   routetable_name       = var.routetable_name
   internet_gateway_id   = var.has_internet_gateway ? module.network-internetgateway.internet_gateway_id : null
