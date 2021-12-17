@@ -13,108 +13,149 @@ data "oci_core_vcns" "this" {
   display_name   = var.vcn_name
 }
 
+locals {
+  network_security_groups = [for k,v in var.network_security_groups: k]
+}
+
 resource "oci_core_network_security_group" "this" {
-  for_each       = var.network_security_groups
+  count = length(local.network_security_groups)
+
   compartment_id = data.oci_identity_compartments.this.compartments[0].id
   vcn_id         = data.oci_core_vcns.this.virtual_networks[0].id
-  display_name   = each.value.display_name
+  display_name   = local.network_security_groups[count.index]
 }
 
 locals {
+  ingress_all = flatten([
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: {
+          nsg_name  = nsg_name
+          src_type  = rule.src_type
+          src       = rule.src
+          stateless = rule.stateless
+      } if rule.direction == "INGRESS" && rule.protocol == "ALL"
+    ]
+  ])
+
+  egress_all = flatten([
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: {
+          nsg_name  = nsg_name
+          dest_type = rule.dest_type
+          dest      = rule.dest
+          stateless = rule.stateless
+      } if rule.direction == "EGRESS" && rule.protocol == "ALL"
+    ]
+  ])
+
   ingress_tcp = flatten([
-    for nsg in var.network_security_group_rules: [
-      for d in nsg.dest_port: {
-        nsg_name  = nsg.nsg_name
-        src_type  = nsg.src_type
-        src       = nsg.src
-        dest_port = {min: d.min, max: d.max}
-        stateless = nsg.stateless
-      }
-    ] if nsg.direction == "INGRESS" && nsg.protocol == "TCP"
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: [
+        for d in rule.dest_port: {
+          nsg_name  = nsg_name
+          src_type  = rule.src_type
+          src       = rule.src
+          dest_port = {min: d.min, max: d.max}
+          stateless = rule.stateless
+        }
+      ] if rule.direction == "INGRESS" && rule.protocol == "TCP"
+    ]
   ])
 
   egress_tcp = flatten([
-    for nsg in var.network_security_group_rules: [
-      for d in nsg.dest_port: {
-        nsg_name  = nsg.nsg_name
-        dest_type = nsg.dest_type
-        dest      = nsg.dest
-        dest_port = {min: d.min, max: d.max}
-        stateless = nsg.stateless
-      }
-    ] if nsg.direction == "EGRESS" && nsg.protocol == "TCP"
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: [
+        for d in rule.dest_port: {
+          nsg_name  = nsg_name
+          dest_type = rule.dest_type
+          dest      = rule.dest
+          dest_port = {min: d.min, max: d.max}
+          stateless = rule.stateless
+        }
+      ] if rule.direction == "EGRESS" && rule.protocol == "TCP"
+    ]
   ])
 
   ingress_udp = flatten([
-    for nsg in var.network_security_group_rules: [
-      for d in nsg.dest_port: {
-        nsg_name  = nsg.nsg_name
-        src_type  = nsg.src_type
-        src       = nsg.src
-        dest_port = {min: d.min, max: d.max}
-        stateless = nsg.stateless
-      }
-    ] if nsg.direction == "INGRESS" && nsg.protocol == "UDP"
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: [
+        for d in rule.dest_port: {
+          nsg_name  = nsg_name
+          src_type  = rule.src_type
+          src       = rule.src
+          dest_port = {min: d.min, max: d.max}
+          stateless = rule.stateless
+        }
+      ] if rule.direction == "INGRESS" && rule.protocol == "UDP"
+    ]
   ])
 
   egress_udp = flatten([
-    for nsg in var.network_security_group_rules: [
-      for d in nsg.dest_port: {
-        nsg_name  = nsg.nsg_name
-        dest_type = nsg.dest_type
-        dest      = nsg.dest
-        dest_port = {min: d.min, max: d.max}
-        stateless = nsg.stateless
-      }
-    ] if nsg.direction == "EGRESS" && nsg.protocol == "UDP"
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: [
+        for d in rule.dest_port: {
+          nsg_name  = nsg_name
+          dest_type = rule.dest_type
+          dest      = rule.dest
+          dest_port = {min: d.min, max: d.max}
+          stateless = rule.stateless
+        }
+      ] if rule.direction == "EGRESS" && rule.protocol == "UDP"
+    ]
   ])
 
   icmp_all_type = flatten([
-    for nsg in var.network_security_group_rules: {
-      nsg_name     = nsg.nsg_name
-      direction    = nsg.direction
-      src_type     = nsg.src_type
-      src          = nsg.src
-      dest_type    = nsg.dest_type
-      dest         = nsg.dest
-      icmp_options = null
-      stateless    = nsg.stateless
-    } if nsg.protocol == "ICMP" && nsg.icmp_options == null
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: {
+        nsg_name     = nsg_name
+        direction    = rule.direction
+        src_type     = rule.src_type
+        src          = rule.src
+        dest_type    = rule.dest_type
+        dest         = rule.dest
+        icmp_options = null
+        stateless    = rule.stateless
+      } if rule.protocol == "ICMP" && rule.icmp_options == null
+    ]
   ])
 
   icmp_only_type = flatten([
-    for nsg in var.network_security_group_rules: [
-      for i in nsg.icmp_options: {
-        nsg_name     = nsg.nsg_name
-        direction    = nsg.direction
-        src_type     = nsg.src_type
-        src          = nsg.src
-        dest_type    = nsg.dest_type
-        dest         = nsg.dest
-        icmp_options = {type: i.type, code: null}
-        stateless    = nsg.stateless
-      } if i.type != null && i.code == null
-    ] if nsg.protocol == "ICMP" && nsg.icmp_options != null
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: [
+        for i in rule.icmp_options: {
+          nsg_name     = nsg_name
+          direction    = rule.direction
+          src_type     = rule.src_type
+          src          = rule.src
+          dest_type    = rule.dest_type
+          dest         = rule.dest
+          icmp_options = {type: i.type, code: null}
+          stateless    = rule.stateless
+        } if i.type != null && i.code == null
+      ] if rule.protocol == "ICMP" && rule.icmp_options != null
+    ]
   ])
 
   icmp_type_with_code = flatten([
-    for nsg in var.network_security_group_rules: [
-      for i in nsg.icmp_options: {
-        nsg_name     = nsg.nsg_name
-        direction    = nsg.direction
-        src_type     = nsg.src_type
-        src          = nsg.src
-        dest_type    = nsg.dest_type
-        dest         = nsg.dest
-        icmp_options = {type: i.type, code: i.code}
-        stateless    = nsg.stateless
-      } if i.type != null && i.code != null
-    ] if nsg.protocol == "ICMP" && nsg.icmp_options != null
+    for nsg_name, rules in var.network_security_groups: [
+      for rule in rules: [
+        for i in rule.icmp_options: {
+          nsg_name     = nsg_name
+          direction    = rule.direction
+          src_type     = rule.src_type
+          src          = rule.src
+          dest_type    = rule.dest_type
+          dest         = rule.dest
+          icmp_options = {type: i.type, code: i.code}
+          stateless    = rule.stateless
+        } if i.type != null && i.code != null
+      ] if rule.protocol == "ICMP" && rule.icmp_options != null
+    ]
   ])
 }
 
 resource "oci_core_network_security_group_security_rule" "ingress_rules_all" {
-  for_each   = {for k,v in var.network_security_group_rules: k => v if v.direction == "INGRESS" && v.protocol == "ALL"}
+  for_each   = {for r in local.ingress_all: "${r.src}-to-${r.nsg_name}-ingress-all" => r}
   depends_on = [ oci_core_network_security_group.this ]
 
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]
@@ -127,7 +168,7 @@ resource "oci_core_network_security_group_security_rule" "ingress_rules_all" {
 }
 
 resource "oci_core_network_security_group_security_rule" "egress_rules_all" {
-  for_each   = {for k,v in var.network_security_group_rules: k => v if v.direction == "EGRESS" && v.protocol == "ALL"}
+  for_each   = {for r in local.egress_all: "${r.nsg_name}-to-${r.dest}-egress-all" => r}
   depends_on = [ oci_core_network_security_group.this ]
 
   network_security_group_id = [for nsg in oci_core_network_security_group.this: nsg.id if nsg.display_name == each.value.nsg_name][0]

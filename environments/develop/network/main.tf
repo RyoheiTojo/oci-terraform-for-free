@@ -65,20 +65,12 @@ module "network-subnets" {
 
 module "network-nsg" {
   source           = "../../../modules/network-nsg"
-  network_security_groups = {
-    nsg001 = {
-      display_name  = "public-subnet-nsg"
-    },
-    nsg002 = {
-      display_name  = "private-subnet-nsg"
-    }
-  }
+
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = var.vcn.compartment_name
   vcn_name         = var.vcn.name
-  network_security_group_rules = {
-    rule001 = {
-      nsg_name     = "public-subnet-nsg"
+  network_security_groups = {
+    public-subnet-nsg = [{
       direction    = "INGRESS"
       src_type     = "CIDR"
       src          = "0.0.0.0/0"
@@ -89,7 +81,8 @@ module "network-nsg" {
       dest_port    = [{min: 22, max: 22}]
       stateless    = false
       icmp_options = null
-    },
+    }],
+    private-subnet-nsg = [],
   }
 }
 

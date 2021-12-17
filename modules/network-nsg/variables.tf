@@ -17,20 +17,7 @@ variable "vcn_name" {
 }
 
 variable "network_security_groups" {
-  type         = map(object({
-    display_name     = string
-  }))
-  description  = "Parameters for each nsg to be created/managed."
-  default      = {
-    default_subnet = {
-      display_name     = null
-    }
-  }
-}
-
-variable "network_security_group_rules" {
-  type         = map(object({
-    nsg_name  = string, # NSG name
+  type         = map(list(object({ # Key is NSG name
     direction = string, # INGRESS / EGRESS
     src_type  = string, # CIDR / NSG
     src       = string, # "x.x.x.x/x" when CIDR / "xxx-nsg" when NSG
@@ -50,21 +37,9 @@ variable "network_security_group_rules" {
       type = number,
       code = number,
     })),
-  }))
+  })))
   description  = "Parameters for each nsg rule to be created/managed."
   default      = {
-    default_nsg = {
-      nsg_name     = null
-      direction    = null
-      src_type     = null
-      src          = null
-      protocol     = null
-      src_port     = []
-      dest_type    = null
-      dest         = null
-      dest_port    = [ ]
-      stateless    = false
-      icmp_options = null
-    }
+    default_nsg = []
   }
 }
