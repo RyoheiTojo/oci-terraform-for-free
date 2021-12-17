@@ -10,6 +10,7 @@ users = {
 dev_admin = { 
   description = "Administrator for dev compartment." 
   email       = null
+  groups      = ["dev_admin_group"]
 } }
 
 groups = { 

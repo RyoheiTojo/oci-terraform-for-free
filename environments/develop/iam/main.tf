@@ -17,6 +17,7 @@ variable "users" {
   type = map(object({
     description = string,
     email       = string,
+    groups      = list(string),
   }))
   description = "Users definitions"
   default = null
@@ -49,7 +50,7 @@ module "iam_users" {
   source       = "../../../modules/iam-user"
 
   tenancy_ocid = var.tenancy_ocid
-  users        = var.users
+  users        = {for k,v in var.users: k=>{description: v.description, email: v.email}}
 }
 
 module "iam_group" {
