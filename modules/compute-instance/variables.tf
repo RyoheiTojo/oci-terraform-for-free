@@ -10,9 +10,9 @@ variable "compartment_name" {
   default = null
 }
 
-variable "ad_num" {
+variable "ad_index" {
   type        = number
-  description = "Availability domain number"
+  description = "Availability domain index"
   default     = 0 # You can choose between 0 and 2.
 }
 
@@ -28,28 +28,26 @@ variable "user_data" {
   default     = null
 }
 
-variable "instances" {
+variable "computes" {
   type = map(object({
-    display_name     = string,
-    assign_public_ip = bool,
-    fd_num           = number, # You can choose between 0 and 2 or null.
-    shape            = string,
-    nsgs             = list(string),
-    subnet_name      = string, # Note: subnet's display_name has to be unique. consider alternative key.
-    src_type         = string,
-    src_id           = string,
+    assign_public_ip        = bool,
+    fd_index                = number, # You can choose between 0 and 2 or null.
+    shape                   = string,
+    network_security_groups = list(string),
+    subnet_name             = string, # Note: subnet's display_name has to be unique. consider alternative key.
+    source_type             = string,
+    source                  = string,
   }))
   description = "Information of instances you want to create."
   default     = {
     default_instance = {
-      display_name     = null
-      assign_public_ip = false
-      fd_num           = null
-      shape            = null
-      nsgs             = []
-      subnet_name      = null
-      src_type         = null
-      src_id           = null
+      assign_public_ip        = false
+      fd_index                = null
+      shape                   = null
+      network_security_groups = []
+      subnet_name             = null
+      source_type             = null
+      source                  = null
     }
   }
 }

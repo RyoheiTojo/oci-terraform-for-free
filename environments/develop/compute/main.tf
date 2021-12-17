@@ -17,26 +17,56 @@ provider "oci" {
   region           = var.homeregion
 }
 
+variable "vcn_name" {
+  type = string
+  description = "Target vcn name"
+  default = null
+}
+
+variable "compartment_name" {
+  type = string
+  description = "Target compartment name"
+  default = null
+}
+
+variable "ad_index" {
+  type        = number
+  description = "Availability domain index"
+  default     = 0 # You can choose between 0 and 2.
+}
+
+variable "computes" {
+  type = map(object({
+    assign_public_ip        = bool,
+    fd_index                = number,
+    shape                   = string,
+    network_security_groups = list(string),
+    subnet_name             = string,
+    source_type             = string,
+    source                  = string,
+  }))
+  description = "Computes list"
+  default = {
+    default-compute = {
+      assign_public_ip        = false
+      fd_index                = null
+      network_security_groups = []
+      shape                   = null
+      source                  = null
+      source_type             = null
+      subnet_name             = null
+    }
+  }
+}
+
 module "compute-instance" {
   source       = "../../../modules/compute-instance"
 
   tenancy_ocid        = var.tenancy_ocid
-  compartment_name    = "dev"
-  vcn_name            = "dev_vcn"
-  ad_num              = 2 # AD-3
+  compartment_name    = var.compartment_name
+  vcn_name            = var.vcn_name
+  ad_index            = var.ad_index
   ssh_authorized_keys = var.ssh_authorized_keys
   user_data           = var.user_data
-
-  instances        = {
-    instance1 = {
-      display_name     = "test1"
-      assign_public_ip = true
-      fd_num           = null # Feeling lucky.
-      shape            = "VM.Standard.E2.1.Micro" # Free (Note: Check the 'Limits, Quotas and Usage' to see where you deploy this shape.)
-      nsgs             = ["public-subnet-nsg"]
-      subnet_name      = "public-subnet"
-      src_type         = "image"
-      src_id           = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
-    }
-  }
+  computes            = var.computes
 }
