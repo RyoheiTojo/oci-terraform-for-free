@@ -1,6 +1,6 @@
-output "compartments" {
-  description = "Compartment tree available"
-  value = module.network-subnets.compartments
+output "network-subnets" {
+  description = "Subnets list"
+  value = module.network-subnets.this
 }
 
 output "network_security_group" {

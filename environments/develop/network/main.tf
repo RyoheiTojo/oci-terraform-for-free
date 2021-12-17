@@ -1,11 +1,5 @@
 variable "tenancy_ocid" {}
 variable "homeregion" {}
-variable "vcn_cidr" {}
-variable "label_prefix" {}
-variable "vcn_dns_label" {}
-variable "enable_ipv6" {}
-variable "freeform_tags" {}
-variable "vcn_name" {}
 variable "internet_gateway_name" {}
 variable "has_internet_gateway" {}
 variable "routetable_name" {}
@@ -45,20 +39,24 @@ module "network-vcn" {
   vcn              = var.vcn
 }
 
-module "network-subnets" {
-  source           = "../../../modules/network-subnet"
-  subnets = {
-    public_subnet = {
-      cidr_block    = "10.1.0.0/24",
-      display_name  = "public-subnet"
-      is_public     = true
-    },
-    private_subnet = {
-      cidr_block    = "10.1.1.0/24",
-      display_name  = "private-subnet"
-      is_public     = false
+variable "subnets" {
+  type = map(object({
+    cidr_block = string,
+    is_public  = bool,
+  }))
+  description = "Subnets list"
+  default = {
+    default-subnet = {
+      cidr_block = null
+      is_public  = false
     }
   }
+}
+
+module "network-subnets" {
+  source           = "../../../modules/network-subnet"
+
+  subnets          = var.subnets
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = var.vcn.compartment_name
   vcn_name         = var.vcn.name
@@ -100,7 +98,7 @@ module "network-internetgateway" {
 
   tenancy_ocid          = var.tenancy_ocid
   compartment_name      = var.vcn.compartment_name
-  vcn_name              = var.vcn_name
+  vcn_name              = var.vcn.name
   internet_gateway_name = var.internet_gateway_name
 }
 

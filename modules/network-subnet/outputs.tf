@@ -1,4 +1,4 @@
-output "compartments" {
-  description = "Compartment tree available"
-  value = data.oci_identity_compartments.this.compartments
+output "this" {
+  description = "Subnets list"
+  value = oci_core_subnet.this
 }
