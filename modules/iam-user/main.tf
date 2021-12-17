@@ -8,11 +8,11 @@ terraform {
 }
 
 resource "oci_identity_user" "this" {
-  count          = length(var.users)
+  for_each = var.users
 
   compartment_id = var.tenancy_ocid
-  name           = var.users[count.index].name
-  description    = var.users[count.index].description
-  email          = var.users[count.index].email == null ? "" : var.users[count.index].email
+  name           = each.key
+  description    = each.value.description
+  email          = each.value.email == null ? "" : each.value.email
 }
 

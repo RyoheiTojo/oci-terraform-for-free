@@ -14,8 +14,7 @@ variable "compartment" {
   }
 }
 variable "users" {
-  type = list(object({
-    name        = string,
+  type = map(object({
     description = string,
     email       = string,
   }))

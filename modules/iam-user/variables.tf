@@ -6,10 +6,9 @@ variable "tenancy_ocid" {
 
 variable users {
   description = "The users in the tenancy."
-  type = list(object({
-    name        = string
+  type = map(object({
     description = string
     email       = string
   }))
-  default = null
+  default = {}
 }
