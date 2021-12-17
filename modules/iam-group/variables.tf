@@ -14,8 +14,8 @@ variable "groups" {
   default = null
 }
 
-variable "user_ids" {
-  type = list(string)
-  description = "List of user ocids to be added as group member"
-  default     = null
+variable "membership_ids" {
+  type = map(list(string)) # {groupA: ['<userA OCID>', '<userB OCID>']}
+  description = "Groupname and userids mappings"
+  default     = {}
 }

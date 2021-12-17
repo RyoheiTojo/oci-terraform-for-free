@@ -20,10 +20,15 @@ resource "oci_identity_group" "this" {
   description    = each.value.description
 }
 
+locals {
+  groupid_userid_list = [for k,v in var.membership_ids: setproduct([oci_identity_group.this[k].id], v)][0]
+}
+
 resource "oci_identity_user_group_membership" "this" {
-  count    = var.user_ids == null ? 0 : length(var.user_ids)
-  user_id  = var.user_ids[count.index]
-  group_id = oci_identity_group.this["dev_admin_group"].id
+  count    = length(local.groupid_userid_list)
+
+  user_id  = local.groupid_userid_list[count.index][1]
+  group_id = local.groupid_userid_list[count.index][0]
 }
 
 resource "oci_identity_policy" "this" {

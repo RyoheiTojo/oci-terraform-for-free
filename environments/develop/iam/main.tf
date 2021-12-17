@@ -54,10 +54,10 @@ module "iam_users" {
 }
 
 module "iam_group" {
-  source       = "../../../modules/iam-group"
-  tenancy_ocid = var.tenancy_ocid
-  groups       = var.groups
-  user_ids     = [for u in module.iam_users.this: u.id]
+  source         = "../../../modules/iam-group"
+  tenancy_ocid   = var.tenancy_ocid
+  groups         = var.groups
+  membership_ids = transpose({for k,v in var.users: module.iam_users.this[k].id=>v.groups})
 }
 
 variable "groups" {
