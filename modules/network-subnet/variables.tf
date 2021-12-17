@@ -19,14 +19,12 @@ variable "vcn_name" {
 variable "subnets" {
   type         = map(object({
     cidr_block       = string,
-    display_name     = string,
     is_public        = bool
   }))
-  description  = "Parameters for each subnet to be created/managed."
+  description  = "Subnets list"
   default      = {
     default_subnet = {
       cidr_block       = null
-      display_name     = null
       is_public        = false
     }
   }

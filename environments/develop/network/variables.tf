@@ -1,19 +1,35 @@
-variable "tenancy_ocid" {
-  type = string
-  description = "The tenancy OCID"
-  default = null
+variable "tenancy_ocid" {}
+variable "homeregion" {}
+variable "internet_gateway_name" {}
+variable "has_internet_gateway" {}
+variable "routetable_name" {}
+
+variable "vcn" {
+  type = object({
+    name             = string,
+    compartment_name = string,
+    cidr_block       = string,
+  })
+  description = "VCN"
+  default = {
+    name             = null
+    compartment_name = null
+    cidr_block       = null
+  }
 }
 
-variable "compartment_name" {
-  type = string
-  description = "Target compartment name"
-  default = null
-}
-
-variable "vcn_name" {
-  type = string
-  description = "Target vcn name"
-  default = null
+variable "subnets" {
+  type = map(object({
+    cidr_block = string,
+    is_public  = bool,
+  }))
+  description = "Subnets list"
+  default = {
+    default-subnet = {
+      cidr_block = null
+      is_public  = false
+    }
+  }
 }
 
 variable "network_security_groups" {

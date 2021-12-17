@@ -1,8 +1,6 @@
-// Copyright (c) 2018, 2021, Oracle and/or its affiliates.
-
 variable "tenancy_ocid" {
   type = string
-  description = "(Deprecated) The OCID of the tenancy."
+  description = "The OCID of the tenancy."
   default = null
 }
 

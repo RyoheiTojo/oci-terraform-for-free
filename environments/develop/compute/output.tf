@@ -1,4 +1,4 @@
-output "nsgs" {
-  description = "NSG list"
-  value = module.compute-instance.nsgs
+output "this" {
+  description = "Computes list"
+  value = module.compute-instance.this
 }

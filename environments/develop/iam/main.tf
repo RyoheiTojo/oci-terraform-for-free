@@ -1,83 +1,38 @@
-// Copyright (c) 2018, 2021, Oracle and/or its affiliates.
-
-variable "tenancy_ocid" {}
-variable "compartment_ocid" {}
-#variable "user_ocid" {}
-#variable "fingerprint" {}
-#variable "private_key_path" {}
-variable "region" {}
-variable "homeregion" {}
-
 terraform {
-  required_version = ">= 0.12, < 0.13" // this example is intended to run with Terraform v0.12
+  required_version = ">= 0.12"
   required_providers {
     oci = {
-      version = ">= 3.27, < 4.0" // force downloading oci-provider compatible with terraform v0.12
+      version = ">= 3.27"
     }
   }
 }
 
 provider "oci" {
   tenancy_ocid     = var.tenancy_ocid
-  #user_ocid        = var.user_ocid
-  #fingerprint      = var.fingerprint
-  #private_key_path = var.private_key_path
   region           = var.homeregion
 }
 
-/*
-* This example shows how to create a compartement and two sub-compartemnt.
-*
-* This example also shows how to create:
-* - several users with a single module block,
-* - a group and add group members to it,
-* - a policy pertaining to a compartment and group,
-* - some more directives to show dynamic groups and policy for it.
-*
-* Note: The compartment resource internally resolves name collisions and returns a reference to the preexisting compartment.
-* All resources created by this example can be deleted by using the Terraform destroy command.
- */
-
 module "iam_compartment" {
   source                  = "../../../modules/iam-compartment"
-  # Pinning each module to a specific version is highly advisable. Please adjust and uncomment the line below
-  # version               = "x.x.x"
   tenancy_ocid            = var.tenancy_ocid
   compartment_id          = var.tenancy_ocid # define the parent compartment. Creation at tenancy root if omitted
-  compartment_name        = "dev"
-  compartment_description = "This compartment is for development."
-  compartment_create      = true # if false, a data source with a matching name is created instead
-  enable_delete           = true # if false, on `terraform destroy`, compartment is deleted from the terraform state but not from oci 
+  compartment_name        = var.compartment.name
+  compartment_description = var.compartment.description
+  enable_delete           = true
 }
 
 module "iam_users" {
   source       = "../../../modules/iam-user"
-  # Pinning each module to a specific version is highly advisable. Please adjust and uncomment the line below
-  # version       = "x.x.x"
+
   tenancy_ocid = var.tenancy_ocid
-  users = [
-    {
-      name        = "ryohei"
-      description = "user for ryohei"
-      email       = null
-    },
-  ]
+  users        = {for k,v in var.users: k=>{description: v.description, email: v.email}}
 }
 
 module "iam_group" {
-  source                = "../../../modules/iam-group"
-  #version               = "2.0.0"
-  tenancy_ocid          = var.tenancy_ocid
-  group_name            = "dev_admin"
-  group_description     = "Admin group for development compartment."
-  #user_ids              = [element(module.iam_users.user_id, 0), element(module.iam_users.user_id, 1), element(module.iam_users.user_id, 2)] # a list of user ocids
-  user_ids              = module.iam_users.user_id
-  policy_name           = "dev_admin_policy"
-  policy_compartment_id = module.iam_compartment.compartment_id
-  policy_description    = "Admin policy for development compartment."
-  policy_statements = [
-    "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.compartment_name}",
-  ]
+  source         = "../../../modules/iam-group"
+  tenancy_ocid   = var.tenancy_ocid
+  groups         = var.groups
+  membership_ids = transpose({for k,v in var.users: module.iam_users.this[k].id=>v.groups})
 }
 
 #module "iam_dynamic_group" {
