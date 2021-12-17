@@ -1,28 +1,3 @@
-variable "tenancy_ocid" {}
-variable "compartment_ocid" {}
-variable "region" {}
-variable "homeregion" {}
-variable "compartment" {
-  type = object({
-    name        = string,
-    description = string,
-  })
-  description = "Compartment definition"
-  default = {
-    name        = "default_compartment"
-    description = "This is default compartment."
-  }
-}
-variable "users" {
-  type = map(object({
-    description = string,
-    email       = string,
-    groups      = list(string),
-  }))
-  description = "Users definitions"
-  default = null
-}
-
 terraform {
   required_version = ">= 0.12"
   required_providers {
@@ -58,16 +33,6 @@ module "iam_group" {
   tenancy_ocid   = var.tenancy_ocid
   groups         = var.groups
   membership_ids = transpose({for k,v in var.users: module.iam_users.this[k].id=>v.groups})
-}
-
-variable "groups" {
-  type = map(object({
-    description         = string,
-    compartment_name    = string,
-    statements_tpl_path = string,
-  }))
-  description = "Groups definitions"
-  default = null
 }
 
 #module "iam_dynamic_group" {
