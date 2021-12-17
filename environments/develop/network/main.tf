@@ -26,7 +26,7 @@ module "network-subnets" {
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = var.vcn.compartment_name
   vcn_name         = var.vcn.name
-  route_table_id   = module.network-routetable.route_table_id
+  route_table_id   = module.network-routetable.this.id
 }
 
 module "network-nsg" {
@@ -54,5 +54,5 @@ module "network-routetable" {
   vcn_id                = module.network-vcn.this.id
   compartment_name      = var.vcn.compartment_name
   routetable_name       = var.routetable_name
-  internet_gateway_id   = var.has_internet_gateway ? module.network-internetgateway.internet_gateway_id : null
+  internet_gateway_id   = var.has_internet_gateway ? module.network-internetgateway.this.id : null
 }
