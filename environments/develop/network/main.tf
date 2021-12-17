@@ -1,4 +1,3 @@
-variable "compartment_name" {}
 variable "tenancy_ocid" {}
 variable "homeregion" {}
 variable "vcn_cidr" {}
@@ -61,8 +60,8 @@ module "network-subnets" {
     }
   }
   tenancy_ocid     = var.tenancy_ocid
-  compartment_name = "dev"
-  vcn_name         = "dev_vcn"
+  compartment_name = var.vcn.compartment_name
+  vcn_name         = var.vcn.name
   route_table_id   = module.network-routetable.route_table_id
 }
 
@@ -77,8 +76,8 @@ module "network-nsg" {
     }
   }
   tenancy_ocid     = var.tenancy_ocid
-  compartment_name = "dev"
-  vcn_name         = "dev_vcn"
+  compartment_name = var.vcn.compartment_name
+  vcn_name         = var.vcn.name
   network_security_group_rules = {
     rule001 = {
       nsg_name     = "public-subnet-nsg"
@@ -100,7 +99,7 @@ module "network-internetgateway" {
   source           = "../../../modules/network-internetgateway"
 
   tenancy_ocid          = var.tenancy_ocid
-  compartment_name      = var.compartment_name
+  compartment_name      = var.vcn.compartment_name
   vcn_name              = var.vcn_name
   internet_gateway_name = var.internet_gateway_name
 }
@@ -110,7 +109,7 @@ module "network-routetable" {
 
   tenancy_ocid          = var.tenancy_ocid
   vcn_id                = module.network-vcn.this.id
-  compartment_name      = var.compartment_name
+  compartment_name      = var.vcn.compartment_name
   routetable_name       = var.routetable_name
   internet_gateway_id   = var.has_internet_gateway ? module.network-internetgateway.internet_gateway_id : null
 }
