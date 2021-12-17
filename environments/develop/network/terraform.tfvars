@@ -19,3 +19,19 @@ subnets = {
     is_public  = false
   }
 }
+
+network_security_groups = {
+  public-subnet-nsg = [{
+    direction    = "INGRESS"
+    src_type     = "CIDR"
+    src          = "0.0.0.0/0"
+    protocol     = "TCP"
+    src_port     = null
+    dest_type    = null
+    dest         = null
+    dest_port    = [{min: 22, max: 22}]
+    stateless    = false
+    icmp_options = null
+  }],
+  private-subnet-nsg = [],
+}
