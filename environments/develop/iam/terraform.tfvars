@@ -13,3 +13,10 @@ users = [
         email       = null
         }
     ]
+
+groups = { 
+dev_admin_group = {
+  compartment_name    = "dev"
+  description         = "Administrator for dev compartment"
+  statements_tpl_path = "./templates/administrator_policy.tftpl"
+} }

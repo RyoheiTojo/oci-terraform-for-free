@@ -54,17 +54,20 @@ module "iam_users" {
 }
 
 module "iam_group" {
-  source                = "../../../modules/iam-group"
-  tenancy_ocid          = var.tenancy_ocid
-  group_name            = "dev_admin"
-  group_description     = "Admin group for development compartment."
-  user_ids              = [for u in module.iam_users.this: u.id]
-  policy_name           = "dev_admin_policy"
-  policy_compartment_id = module.iam_compartment.this.id
-  policy_description    = "Admin policy for development compartment."
-  policy_statements = [
-    "Allow group ${module.iam_group.group_name} to manage instances in compartment ${module.iam_compartment.this.name}",
-  ]
+  source       = "../../../modules/iam-group"
+  tenancy_ocid = var.tenancy_ocid
+  groups       = var.groups
+  user_ids     = [for u in module.iam_users.this: u.id]
+}
+
+variable "groups" {
+  type = map(object({
+    description         = string,
+    compartment_name    = string,
+    statements_tpl_path = string,
+  }))
+  description = "Groups definitions"
+  default = null
 }
 
 #module "iam_dynamic_group" {

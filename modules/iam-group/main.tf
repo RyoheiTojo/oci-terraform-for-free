@@ -7,38 +7,31 @@ terraform {
   }
 }
 
+data "oci_identity_compartments" "this" {
+  compartment_id = var.tenancy_ocid
+  compartment_id_in_subtree = true
+}
+
 resource "oci_identity_group" "this" {
-  count          = var.group_create == true ? 1 : 0
+  for_each = var.groups
+
   compartment_id = var.tenancy_ocid
-  name           = var.group_name
-  description    = var.group_description
-}
-
-data "oci_identity_groups" "this" {
-  count          = var.group_create == false ? 1 : 0
-  compartment_id = var.tenancy_ocid
-
-  filter {
-    name   = "name"
-    values = [var.group_name]
-  }
-}
-
-locals {
-  group_ids = concat(flatten(data.oci_identity_groups.this.*.groups), list(map("id", "")))
+  name           = each.key
+  description    = each.value.description
 }
 
 resource "oci_identity_user_group_membership" "this" {
   count    = var.user_ids == null ? 0 : length(var.user_ids)
   user_id  = var.user_ids[count.index]
-  group_id = var.group_create ? element(concat(oci_identity_group.this.*.id, list("")), 0) : lookup(local.group_ids[0], "id")
+  group_id = oci_identity_group.this["dev_admin_group"].id
 }
 
 resource "oci_identity_policy" "this" {
-  count          = var.policy_name != null ? 1 : 0
+  for_each = var.groups
   depends_on     = [oci_identity_group.this]
-  name           = var.policy_name
-  description    = var.policy_description
-  compartment_id = var.policy_compartment_id
-  statements     = var.policy_statements
+
+  name           = "${each.key}-policy"
+  description    = each.value.description
+  compartment_id = [for c in data.oci_identity_compartments.this.compartments: c.id if c.name == each.value.compartment_name][0]
+  statements     = split("\n", templatefile("${path.module}/${each.value.statements_tpl_path}", {group_name: each.key, compartment_name: each.value.compartment_name}))
 }
