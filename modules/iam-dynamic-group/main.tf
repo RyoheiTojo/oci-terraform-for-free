@@ -1,17 +1,12 @@
-// Copyright (c) 2018, 2021, Oracle and/or its affiliates.
-
 terraform {
-  required_version = ">= 0.12" // terraform version below 0.12 is not tested/supported with this module
+  required_version = ">= 0.12"
   required_providers {
     oci = {
-      version = ">= 3.27" // force downloading oci-provider compatible with terraform v0.12
+      version = ">= 3.27"
     }
   }
 }
 
-########################
-# Dynamic Group
-########################
 resource "oci_identity_dynamic_group" "this" {
   count          = var.dynamic_group_create == true ? 1 : 0
   compartment_id = var.tenancy_ocid
@@ -34,9 +29,6 @@ locals {
   dynamic_group_ids = concat(flatten(data.oci_identity_dynamic_groups.this.*.dynamic_groups), list(map("id", "")))
 }
 
-########################
-# Dynamic Group Policy
-########################
 resource "oci_identity_policy" "this" {
   count          = var.policy_name != null ? 1 : 0
   depends_on     = [oci_identity_dynamic_group.this]
