@@ -57,7 +57,7 @@ locals {
 resource "oci_identity_tag" "this" {
   count = length(local.defined_tags)
   
-  tag_namespace_id = [for n in oci_identity_tag_namespace.this: n.name == local.defined_tags[count.index].namespace][0]
+  tag_namespace_id = [for n in oci_identity_tag_namespace.this: n.id if n.name == local.defined_tags[count.index].namespace][0]
   description = local.defined_tags[count.index].tag.description
   name        = local.defined_tags[count.index].tag.name
 
