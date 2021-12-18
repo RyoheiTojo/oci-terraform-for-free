@@ -7,24 +7,6 @@ terraform {
   }
 }
 
-variable "dynamic_groups" {
-  type = map(object({
-    compartment_name    = string,
-    description         = string,
-    matching_rule       = string,
-    statements_tpl_path = string,
-  }))
-  description = "Dynamic definitions"
-  default = {
-    default_group = {
-      compartment_name    = null
-      description         = null
-      matching_rule       = null
-      statements_tpl_path = null
-    }
-  }
-}
-
 data "oci_identity_compartments" "this" {
   compartment_id = var.tenancy_ocid
   compartment_id_in_subtree = true

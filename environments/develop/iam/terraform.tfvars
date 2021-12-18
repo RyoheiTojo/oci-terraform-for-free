@@ -37,3 +37,12 @@ tags = {
     }
   }
 }
+
+dynamic_groups = {
+  oci-client-group = {
+    compartment_name    = "dev"
+    description         = "Dynamic group for OCI-CLI"
+    matching_rule       = "tag.dev_tag_namespace.use-oci-cli.value='yes'"
+    statements_tpl_path = "./templates/use_oci_cli_group_policy.tftpl"
+  }
+}
