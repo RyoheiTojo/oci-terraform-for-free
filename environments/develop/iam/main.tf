@@ -35,6 +35,17 @@ module "iam_group" {
   membership_ids = transpose({for k,v in var.users: module.iam_users.this[k].id=>v.groups})
 }
 
+module "iam_tag" {
+  source         = "../../../modules/iam-tag"
+
+  tenancy_ocid   = var.tenancy_ocid
+  compartment_name        = var.compartment.name
+  tag_namespace = {
+    name = "dev_tag_namespace"
+    description = "TagNamespace for dev"
+  }
+}
+
 #module "iam_dynamic_group" {
 #  source                    = "oracle-terraform-modules/iam/oci//modules/iam-dyanmic-group"
 #  # Pinning each module to a specific version is highly advisable. Please adjust and uncomment the line below
