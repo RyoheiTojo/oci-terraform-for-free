@@ -17,6 +17,7 @@ output "iam_tags" {
   description = "List of tags"
   value       = {
     tag_namespaces: module.iam_tag.namespaces
+    defined_tags:   module.iam_tag.defined_tags
   }
 }
 

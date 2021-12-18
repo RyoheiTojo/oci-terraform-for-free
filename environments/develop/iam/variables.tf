@@ -35,3 +35,21 @@ variable "groups" {
   description = "Groups definitions"
   default = null
 }
+
+variable "tags" {
+  type = map(object({
+      description  = string,
+      defined_tags = map(object({
+          description    = string,
+          validator_type = string, # "ENUM" or "DEFAULT"
+          values         = list(string),
+      }))
+  }))
+  description = "Settings of tag"
+  default = { 
+      default_tagnamespace = { 
+          description  = null 
+          defined_tags = {}
+      }
+  }
+}

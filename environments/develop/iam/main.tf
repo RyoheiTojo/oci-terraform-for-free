@@ -38,20 +38,9 @@ module "iam_group" {
 module "iam_tag" {
   source         = "../../../modules/iam-tag"
 
-  tenancy_ocid   = var.tenancy_ocid
-  compartment_name        = var.compartment.name
-  tags = { 
-    dev_tag_namespace = { 
-      description  = "TagNamespace for dev"
-      defined_tags = {
-        use-oci-cli = {
-          description    = "Instance principal for oci-cli"
-          validator_type = "ENUM"
-          values         = ["yes", "no"]
-        }
-      }
-    }
-  }
+  tenancy_ocid     = var.tenancy_ocid
+  compartment_name = var.compartment.name
+  tags             = var.tags
 }
 
 #module "iam_dynamic_group" {

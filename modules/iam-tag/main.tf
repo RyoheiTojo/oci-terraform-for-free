@@ -1,15 +1,3 @@
-variable "tenancy_ocid" {
-  type = string
-  description = "Tenancy OCID"
-  default = null
-}
-
-variable "compartment_name" {
-  type = string
-  description = "Compartment name"
-  default = null
-}
-
 data "oci_identity_compartments" "this" {
   compartment_id = var.tenancy_ocid
   compartment_id_in_subtree = true
@@ -17,24 +5,6 @@ data "oci_identity_compartments" "this" {
   filter {
     name   = "name"
     values = [var.compartment_name] # TODO: there is a posibility to match several candidates.
-  }
-}
-
-variable "tags" {
-  type = map(object({
-      description  = string,
-      defined_tags = map(object({
-          description    = string,
-          validator_type = string,
-          values         = list(string),
-      }))
-  }))
-  description = "Settings of tag"
-  default = { 
-      default_tagnamespace = { 
-          description  = null 
-          defined_tags = {}
-      }
   }
 }
 
@@ -51,18 +21,27 @@ resource "oci_identity_tag_namespace" "this" {
 }
 
 locals {
-  defined_tags = flatten([for namespace, nsdata in var.tags: [for tagname, tagdata in nsdata.defined_tags: {namespace: namespace, tag: {name: tagname, description: tagdata.description, validator_type: tagdata.validator_type, values: tagdata.values}}]])
+  defined_default_tags = flatten([for namespace, nsdata in var.tags: [for tagname, tagdata in nsdata.defined_tags: {namespace: namespace, tag: {name: tagname, description: tagdata.description, validator_type: tagdata.validator_type, values: tagdata.values}} if tagdata.validator_type == "DEFAULT"]])
+  defined_enum_tags    = flatten([for namespace, nsdata in var.tags: [for tagname, tagdata in nsdata.defined_tags: {namespace: namespace, tag: {name: tagname, description: tagdata.description, validator_type: tagdata.validator_type, values: tagdata.values}} if tagdata.validator_type == "ENUM"]])
 }
 
-resource "oci_identity_tag" "this" {
-  count = length(local.defined_tags)
+resource "oci_identity_tag" "default_tags" {
+  count = length(local.defined_default_tags)
   
-  tag_namespace_id = [for n in oci_identity_tag_namespace.this: n.id if n.name == local.defined_tags[count.index].namespace][0]
-  description = local.defined_tags[count.index].tag.description
-  name        = local.defined_tags[count.index].tag.name
+  tag_namespace_id = [for n in oci_identity_tag_namespace.this: n.id if n.name == local.defined_default_tags[count.index].namespace][0]
+  description = local.defined_default_tags[count.index].tag.description
+  name        = local.defined_default_tags[count.index].tag.name
+}
+
+resource "oci_identity_tag" "enum_tags" {
+  count = length(local.defined_enum_tags)
+  
+  tag_namespace_id = [for n in oci_identity_tag_namespace.this: n.id if n.name == local.defined_enum_tags[count.index].namespace][0]
+  description = local.defined_enum_tags[count.index].tag.description
+  name        = local.defined_enum_tags[count.index].tag.name
 
   validator {
-    validator_type = local.defined_tags[count.index].tag.validator_type
-    values         = local.defined_tags[count.index].tag.values
+    validator_type = local.defined_enum_tags[count.index].tag.validator_type
+    values         = local.defined_enum_tags[count.index].tag.values
   }
 }
