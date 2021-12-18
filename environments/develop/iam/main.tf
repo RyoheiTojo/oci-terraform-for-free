@@ -40,9 +40,11 @@ module "iam_tag" {
 
   tenancy_ocid   = var.tenancy_ocid
   compartment_name        = var.compartment.name
-  tag_namespace = {
-    name = "dev_tag_namespace"
-    description = "TagNamespace for dev"
+  tags = { 
+    dev_tag_namespace = { 
+      description  = "TagNamespace for dev"
+      defined_tags = []
+    }
   }
 }
 

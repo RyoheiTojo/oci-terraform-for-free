@@ -20,21 +20,32 @@ data "oci_identity_compartments" "this" {
   }
 }
 
-variable "tag_namespace" {
-  type = object({
-      name        = string,
-      description = string,
-  })
-  description = "Settings of tag namespace"
-  default = {
-    description = null
-    name        = null
+variable "tags" {
+  type = map(object({
+      description  = string,
+      defined_tags = list(object({
+          name           = string,
+          validator_type = string,
+          values         = list(string),
+      }))
+  }))
+  description = "Settings of tag"
+  default = { 
+      default_tagnamespace = { 
+          description  = null 
+          defined_tags = []
+      }
   }
 }
 
+locals {
+  tag_namespaces = [for k,v in var.tags: k]
+}
+
 resource "oci_identity_tag_namespace" "this" {
+  count = length(local.tag_namespaces)
   compartment_id = data.oci_identity_compartments.this.compartments[0].id
 
-  name        = var.tag_namespace.name
-  description = var.tag_namespace.description
+  name        = local.tag_namespaces[count.index]
+  description = var.tags[local.tag_namespaces[count.index]].description
 }
