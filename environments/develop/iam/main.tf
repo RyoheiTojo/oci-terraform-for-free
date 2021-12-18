@@ -36,26 +36,23 @@ module "iam_group" {
 }
 
 module "iam_tag" {
-  source         = "../../../modules/iam-tag"
+  source = "../../../modules/iam-tag"
 
   tenancy_ocid     = var.tenancy_ocid
   compartment_name = var.compartment.name
   tags             = var.tags
 }
 
-#module "iam_dynamic_group" {
-#  source                    = "oracle-terraform-modules/iam/oci//modules/iam-dyanmic-group"
-#  # Pinning each module to a specific version is highly advisable. Please adjust and uncomment the line below
-#  # version               = "x.x.x"
-#  tenancy_ocid              = var.tenancy_ocid
-#  dynamic_group_name        = "tf_example_dynamic_group"
-#  dynamic_group_description = "dynamic group created by terraform"
-#  matching_rule             = "instance.compartment.id = '${module.iam_compartment.compartment_id}'"
-#  policy_compartment_id     = module.iam_compartment.compartment_id
-#  policy_name               = "tf-example-dynamic-policy"
-#  policy_description        = "dynamic policy created by terraform"
-#  policy_statements = [
-#    "Allow dynamic-group ${module.iam_dynamic_group.dynamic_group_name} to read instances in compartment tf_example_compartment",
-#    "Allow dynamic-group ${module.iam_dynamic_group.dynamic_group_name} to inspect instances in compartment tf_example_compartment",
-#  ]
-#}
+module "iam_dynamic_group" {
+  source = "../../../modules/iam-dynamic-group"
+
+  tenancy_ocid   = var.tenancy_ocid
+  dynamic_groups = {
+    oci-client-group = {
+      compartment_name    = "dev"
+      description         = "Dynamic group for OCI-CLI"
+      matching_rule       = "tag.dev_tag_namespace.use-oci-cli.value='yes'"
+      statements_tpl_path = "./templates/use_oci_cli_group_policy.tftpl"
+    }
+  }
+}
