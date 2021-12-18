@@ -43,7 +43,13 @@ module "iam_tag" {
   tags = { 
     dev_tag_namespace = { 
       description  = "TagNamespace for dev"
-      defined_tags = []
+      defined_tags = {
+        use-oci-cli = {
+          description    = "Instance principal for oci-cli"
+          validator_type = "ENUM"
+          values         = ["yes", "no"]
+        }
+      }
     }
   }
 }

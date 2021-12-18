@@ -23,8 +23,8 @@ data "oci_identity_compartments" "this" {
 variable "tags" {
   type = map(object({
       description  = string,
-      defined_tags = list(object({
-          name           = string,
+      defined_tags = map(object({
+          description    = string,
           validator_type = string,
           values         = list(string),
       }))
@@ -33,7 +33,7 @@ variable "tags" {
   default = { 
       default_tagnamespace = { 
           description  = null 
-          defined_tags = []
+          defined_tags = {}
       }
   }
 }
@@ -48,4 +48,21 @@ resource "oci_identity_tag_namespace" "this" {
 
   name        = local.tag_namespaces[count.index]
   description = var.tags[local.tag_namespaces[count.index]].description
+}
+
+locals {
+  defined_tags = flatten([for namespace, nsdata in var.tags: [for tagname, tagdata in nsdata.defined_tags: {namespace: namespace, tag: {name: tagname, description: tagdata.description, validator_type: tagdata.validator_type, values: tagdata.values}}]])
+}
+
+resource "oci_identity_tag" "this" {
+  count = length(local.defined_tags)
+  
+  tag_namespace_id = [for n in oci_identity_tag_namespace.this: n.name == local.defined_tags[count.index].namespace][0]
+  description = local.defined_tags[count.index].tag.description
+  name        = local.defined_tags[count.index].tag.name
+
+  validator {
+    validator_type = local.defined_tags[count.index].tag.validator_type
+    values         = local.defined_tags[count.index].tag.values
+  }
 }
