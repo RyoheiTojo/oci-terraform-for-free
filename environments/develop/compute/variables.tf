@@ -30,6 +30,7 @@ variable "computes" {
     subnet_name             = string,
     source_type             = string,
     source                  = string,
+    defined_tags            = map(string),
   }))
   description = "Computes list"
   default = {
@@ -41,6 +42,7 @@ variable "computes" {
       source                  = null
       source_type             = null
       subnet_name             = null
+      defined_tags            = {}
     }
   }
 }

@@ -40,6 +40,7 @@ resource "oci_core_instance" "this" {
   display_name        = each.key
   fault_domain        = each.value.fd_index != null ? data.oci_identity_fault_domains.this.fault_domains[each.value.fd_index].name : null
   shape               = each.value.shape
+  defined_tags        = each.value.defined_tags
 
   metadata = {
     ssh_authorized_keys = var.ssh_authorized_keys
