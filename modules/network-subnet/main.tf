@@ -19,7 +19,7 @@ resource "oci_core_subnet" "this" {
   cidr_block                 = each.value.cidr_block
   compartment_id             = data.oci_identity_compartments.this.compartments[0].id
   vcn_id                     = data.oci_core_vcns.this.virtual_networks[0].id
-  route_table_id             = var.route_table_id
+  route_table_id             = var.route_tables[each.value.route_table_name]
   display_name               = each.key
   prohibit_public_ip_on_vnic = !each.value.is_public
 }

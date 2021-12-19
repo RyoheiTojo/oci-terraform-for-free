@@ -19,19 +19,23 @@ variable "vcn_name" {
 variable "subnets" {
   type         = map(object({
     cidr_block       = string,
-    is_public        = bool
+    is_public        = bool,
+    route_table_name = string,
   }))
   description  = "Subnets list"
   default      = {
     default_subnet = {
       cidr_block       = null
       is_public        = false
+      route_table_name = null
     }
   }
 }
 
-variable "route_table_id" {
-  type = string
-  description = "Route table ID"
-  default = null
+variable "route_tables" {
+  type = map(string)
+  description = "Route tables"
+  default = {
+    default_route_table = null
+  }
 }
