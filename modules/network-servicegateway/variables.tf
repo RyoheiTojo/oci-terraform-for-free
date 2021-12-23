@@ -16,14 +16,20 @@ variable "tenancy_ocid" {
   default = null
 }
 
-variable "vcn_name" {
+variable "vcn_id" {
   type = string
-  description = "Target vcn name"
+  description = "Target vcn ID"
   default = null
 }
 
 variable "route_table_id" {
   type = string
   description = "OCID of the route table"
+  default = null
+}
+
+variable "service_cider_block" {
+  type = string
+  description = "Service CIDR block"
   default = null
 }

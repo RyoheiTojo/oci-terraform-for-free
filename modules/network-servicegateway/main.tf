@@ -16,14 +16,9 @@ data "oci_identity_compartments" "this" {
   }
 }
 
-data "oci_core_vcns" "this" {
-  compartment_id = data.oci_identity_compartments.this.compartments[0].id
-  display_name   = var.vcn_name
-}
-
 resource "oci_core_service_gateway" "this" {
   compartment_id = data.oci_identity_compartments.this.compartments[0].id
-  vcn_id         = data.oci_core_vcns.this.virtual_networks[0].id
+  vcn_id         = var.vcn_id
 
   services {
       service_id = data.oci_core_services.this.services[0].id

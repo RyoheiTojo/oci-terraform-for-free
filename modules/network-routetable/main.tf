@@ -29,7 +29,8 @@ resource "oci_core_route_table" "this" {
     for_each = each.value.has_service_gateway ? {id: var.service_gateway_id} : {}
     
     content {
-      destination       = "0.0.0.0/0"
+      destination       = var.service_cider_block
+      destination_type  = "SERVICE_CIDR_BLOCK"
       network_entity_id = route_rules.value
       description       = "Service Gateway"
     }

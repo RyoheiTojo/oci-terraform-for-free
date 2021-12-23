@@ -47,3 +47,6 @@ network_security_groups = {
   }],
   private-subnet-nsg = [],
 }
+
+# format: all-<region>-services-in-oracle-services-network
+service_cider_block = "all-iad-services-in-oracle-services-network"

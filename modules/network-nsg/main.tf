@@ -8,11 +8,6 @@ data "oci_identity_compartments" "this" {
   }
 }
 
-data "oci_core_vcns" "this" {
-  compartment_id = data.oci_identity_compartments.this.compartments[0].id
-  display_name   = var.vcn_name
-}
-
 locals {
   network_security_groups = [for k,v in var.network_security_groups: k]
 }
@@ -21,7 +16,7 @@ resource "oci_core_network_security_group" "this" {
   count = length(local.network_security_groups)
 
   compartment_id = data.oci_identity_compartments.this.compartments[0].id
-  vcn_id         = data.oci_core_vcns.this.virtual_networks[0].id
+  vcn_id         = var.vcn_id
   display_name   = local.network_security_groups[count.index]
 }
 

@@ -10,9 +10,9 @@ variable "compartment_name" {
   default = null
 }
 
-variable "vcn_name" {
+variable "vcn_id" {
   type = string
-  description = "Target vcn name"
+  description = "Target vcn ID"
   default = null
 }
 

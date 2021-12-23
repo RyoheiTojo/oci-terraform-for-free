@@ -74,3 +74,9 @@ variable "network_security_groups" {
     default_nsg = []
   }
 }
+
+variable "service_cider_block" {
+  type = string
+  description = "Service CIDR block"
+  default = null
+}
