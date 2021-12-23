@@ -15,6 +15,16 @@ computes = {
     subnet_name             = "public-subnet"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
+    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "no"}
+  },
+  test2 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.E2.1.Micro" # Free (Note: Check the 'Limits, Quotas and Usage' to see where you deploy this shape.)
+    network_security_groups = ["private-subnet-nsg"]
+    subnet_name             = "private-subnet"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
     defined_tags            = {"dev_tag_namespace.use-oci-cli" = "yes"}
   }
 }
