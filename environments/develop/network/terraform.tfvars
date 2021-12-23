@@ -4,12 +4,12 @@ service_gateway_name  = "dev_service_gateway"
 
 route_tables = {
   public_route_table = {
-    has_internet_gateway = true
-    has_service_gateway  = false
+    internet_gateway_destinations = ["0.0.0.0/0"]
+    service_gateway_destinations  = []
   },
   inner_route_table = {
-    has_internet_gateway = false
-    has_service_gateway  = true
+    internet_gateway_destinations = []
+    service_gateway_destinations  = ["all-iad-services-in-oracle-services-network"] # format: all-<region>-services-in-oracle-services-network
   }
 }
 
@@ -47,6 +47,3 @@ network_security_groups = {
   }],
   private-subnet-nsg = [],
 }
-
-# format: all-<region>-services-in-oracle-services-network
-service_cider_block = "all-iad-services-in-oracle-services-network"

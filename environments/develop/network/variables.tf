@@ -5,14 +5,14 @@ variable "service_gateway_name" {}
 
 variable "route_tables" {
   type = map(object({
-    has_internet_gateway = bool,
-    has_service_gateway  = bool,
+    internet_gateway_destinations = list(string),
+    service_gateway_destinations  = list(string),
   }))
   description = "Route tables"
   default = {
     default_table = {
-      has_internet_gateway = false
-      has_service_gateway  = false
+      internet_gateway_destinations = []
+      service_gateway_destinations  = []
     }
   }
 }

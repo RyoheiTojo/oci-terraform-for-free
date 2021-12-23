@@ -30,14 +30,20 @@ variable "vcn_id" {
 
 variable "route_tables" {
   type = map(object({
-    has_internet_gateway = bool,
-    has_service_gateway  = bool,
+    internet_gateway_destinations = list(string),
+    service_gateway_destinations  = list(string),
   }))
   description = "Route tables"
   default = {
     default_table = {
-      has_internet_gateway = false # Both of them cannot be true at same time.
-      has_service_gateway  = false
+      internet_gateway_destinations = [] # Both of them cannot be true at same time.
+      service_gateway_destinations  = []
     }
   }
+}
+
+variable "service_cider_block" {
+  type = string
+  description = "Service CIDR block"
+  default = null
 }

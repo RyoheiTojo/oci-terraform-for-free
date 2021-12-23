@@ -27,9 +27,3 @@ variable "route_table_id" {
   description = "OCID of the route table"
   default = null
 }
-
-variable "service_cider_block" {
-  type = string
-  description = "Service CIDR block"
-  default = null
-}

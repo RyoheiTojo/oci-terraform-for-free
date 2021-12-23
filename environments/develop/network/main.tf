@@ -54,7 +54,6 @@ module "network-servicegateway" {
   compartment_name      = var.vcn.compartment_name
   vcn_id                = module.network-vcn.this.id
   service_gateway_name  = var.service_gateway_name
-  service_cider_block   = var.service_cider_block
 }
 
 module "network-routetable" {

@@ -16,22 +16,22 @@ resource "oci_core_route_table" "this" {
   display_name   = each.key
 
   dynamic "route_rules" {
-    for_each = each.value.has_internet_gateway ? {id: var.internet_gateway_id} : {}
+    for_each = {for dest in each.value.internet_gateway_destinations: dest=>dest}
     
     content {
-      destination       = "0.0.0.0/0"
-      network_entity_id = route_rules.value
+      destination       = route_rules.value
+      network_entity_id = var.internet_gateway_id
       description       = "Internet Gateway"
     }
   }
 
   dynamic "route_rules" {
-    for_each = each.value.has_service_gateway ? {id: var.service_gateway_id} : {}
+    for_each = {for dest in each.value.service_gateway_destinations: dest=>dest}
     
     content {
-      destination       = var.service_cider_block
+      destination       = route_rules.value
       destination_type  = "SERVICE_CIDR_BLOCK"
-      network_entity_id = route_rules.value
+      network_entity_id = var.service_gateway_id
       description       = "Service Gateway"
     }
   }
