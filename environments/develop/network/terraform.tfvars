@@ -1,7 +1,17 @@
 homeregion            = "us-ashburn-1"
 internet_gateway_name = "dev_internet_gateway"
-has_internet_gateway  = true
-routetable_name       = "dev_route_table"
+service_gateway_name  = "dev_service_gateway"
+
+route_tables = {
+  public_route_table = {
+    internet_gateway_destinations = ["0.0.0.0/0"]
+    service_gateway_destinations  = []
+  },
+  inner_route_table = {
+    internet_gateway_destinations = []
+    service_gateway_destinations  = ["all-iad-services-in-oracle-services-network"] # format: all-<region>-services-in-oracle-services-network
+  }
+}
 
 vcn = {
   name             = "dev_vcn"
@@ -11,12 +21,14 @@ vcn = {
 
 subnets = {
   public-subnet = {
-    cidr_block = "10.1.0.0/24"
-    is_public  = true
+    cidr_block       = "10.1.0.0/24"
+    is_public        = true
+    route_table_name = "public_route_table"
   },
   private-subnet = {
-    cidr_block = "10.1.1.0/24"
-    is_public  = false
+    cidr_block       = "10.1.1.0/24"
+    is_public        = false
+    route_table_name = "inner_route_table"
   }
 }
 

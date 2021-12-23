@@ -1,8 +1,21 @@
 variable "tenancy_ocid" {}
 variable "homeregion" {}
 variable "internet_gateway_name" {}
-variable "has_internet_gateway" {}
-variable "routetable_name" {}
+variable "service_gateway_name" {}
+
+variable "route_tables" {
+  type = map(object({
+    internet_gateway_destinations = list(string),
+    service_gateway_destinations  = list(string),
+  }))
+  description = "Route tables"
+  default = {
+    default_table = {
+      internet_gateway_destinations = []
+      service_gateway_destinations  = []
+    }
+  }
+}
 
 variable "vcn" {
   type = object({
@@ -22,12 +35,14 @@ variable "subnets" {
   type = map(object({
     cidr_block = string,
     is_public  = bool,
+    route_table_name = string,
   }))
   description = "Subnets list"
   default = {
     default-subnet = {
       cidr_block = null
       is_public  = false
+      route_table_name = null
     }
   }
 }
@@ -58,4 +73,10 @@ variable "network_security_groups" {
   default      = {
     default_nsg = []
   }
+}
+
+variable "service_cider_block" {
+  type = string
+  description = "Service CIDR block"
+  default = null
 }

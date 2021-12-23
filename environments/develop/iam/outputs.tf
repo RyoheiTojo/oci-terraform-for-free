@@ -13,6 +13,14 @@ output "iam_groups" {
   value       = module.iam_group.this
 }
 
+output "iam_tags" {
+  description = "List of tags"
+  value       = {
+    tag_namespaces: module.iam_tag.namespaces
+    defined_tags:   module.iam_tag.defined_tags
+  }
+}
+
 #output "iam_dynamic_group_name" {
 #  description = "dynamic group name and associated ocid"
 #  value       = module.iam_dynamic_group.name_ocid

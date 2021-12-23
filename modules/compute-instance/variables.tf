@@ -37,6 +37,7 @@ variable "computes" {
     subnet_name             = string, # Note: subnet's display_name has to be unique. consider alternative key.
     source_type             = string,
     source                  = string,
+    defined_tags            = map(string),
   }))
   description = "Information of instances you want to create."
   default     = {
@@ -48,6 +49,7 @@ variable "computes" {
       subnet_name             = null
       source_type             = null
       source                  = null
+      defined_tags            = {}
     }
   }
 }

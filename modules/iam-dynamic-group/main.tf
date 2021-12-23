@@ -1,47 +1,32 @@
-// Copyright (c) 2018, 2021, Oracle and/or its affiliates.
-
 terraform {
-  required_version = ">= 0.12" // terraform version below 0.12 is not tested/supported with this module
+  required_version = ">= 0.12"
   required_providers {
     oci = {
-      version = ">= 3.27" // force downloading oci-provider compatible with terraform v0.12
+      version = ">= 3.27"
     }
   }
 }
 
-########################
-# Dynamic Group
-########################
+data "oci_identity_compartments" "this" {
+  compartment_id = var.tenancy_ocid
+  compartment_id_in_subtree = true
+}
+
 resource "oci_identity_dynamic_group" "this" {
-  count          = var.dynamic_group_create == true ? 1 : 0
+  for_each = var.dynamic_groups
+
   compartment_id = var.tenancy_ocid
-  name           = var.dynamic_group_name
-  description    = var.dynamic_group_description
-  matching_rule  = var.matching_rule
+  name           = each.key
+  description    = each.value.description
+  matching_rule  = each.value.matching_rule
 }
 
-data "oci_identity_dynamic_groups" "this" {
-  count          = var.dynamic_group_create == false ? 1 : 0
-  compartment_id = var.tenancy_ocid
-
-  filter {
-    name   = "name"
-    values = [var.dynamic_group_name]
-  }
-}
-
-locals {
-  dynamic_group_ids = concat(flatten(data.oci_identity_dynamic_groups.this.*.dynamic_groups), list(map("id", "")))
-}
-
-########################
-# Dynamic Group Policy
-########################
 resource "oci_identity_policy" "this" {
-  count          = var.policy_name != null ? 1 : 0
-  depends_on     = [oci_identity_dynamic_group.this]
-  name           = var.policy_name
-  description    = var.policy_description
-  compartment_id = var.policy_compartment_id
-  statements     = var.policy_statements
+  for_each = var.dynamic_groups
+  depends_on = [oci_identity_dynamic_group.this]
+
+  name           = "${each.key}-policy"
+  description    = each.value.description
+  compartment_id = [for c in data.oci_identity_compartments.this.compartments: c.id if c.name == each.value.compartment_name][0]
+  statements     = split("\n", templatefile("${path.module}/${each.value.statements_tpl_path}", {group_name: each.key, compartment_name: each.value.compartment_name}))
 }

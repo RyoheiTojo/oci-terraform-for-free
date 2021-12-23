@@ -1,6 +1,6 @@
-variable "internet_gateway_name" {
+variable "service_gateway_name" {
   type = string
-  description = "Internet gateway name"
+  description = "Service gateway name"
   default = null
 }
 
@@ -22,3 +22,8 @@ variable "vcn_id" {
   default = null
 }
 
+variable "route_table_id" {
+  type = string
+  description = "OCID of the route table"
+  default = null
+}
