@@ -26,11 +26,20 @@ variable "computes" {
     assign_public_ip        = bool,
     fd_index                = number,
     shape                   = string,
+    shape_config            = object({
+      memory_in_gbs = number,
+      ocpus         = number,
+    })
     network_security_groups = list(string),
     subnet_name             = string,
     source_type             = string,
     source                  = string,
     defined_tags            = map(string),
+    additional_vnic         = list(object({
+      private_ip       = string,
+      assign_public_ip = bool,
+      subnet_name      = string,
+    }))
   }))
   description = "Computes list"
   default = {
@@ -39,10 +48,12 @@ variable "computes" {
       fd_index                = null
       network_security_groups = []
       shape                   = null
+      shape_config            = null
       source                  = null
       source_type             = null
       subnet_name             = null
       defined_tags            = {}
+      additional_vnic         = []
     }
   }
 }

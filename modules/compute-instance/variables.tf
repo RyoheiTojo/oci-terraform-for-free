@@ -33,11 +33,20 @@ variable "computes" {
     assign_public_ip        = bool,
     fd_index                = number, # You can choose between 0 and 2 or null.
     shape                   = string,
+    shape_config            = object({
+      memory_in_gbs = number,
+      ocpus         = number,
+    })
     network_security_groups = list(string),
     subnet_name             = string, # Note: subnet's display_name has to be unique. consider alternative key.
     source_type             = string,
     source                  = string,
     defined_tags            = map(string),
+    additional_vnic         = list(object({
+      private_ip       = string,
+      assign_public_ip = bool,
+      subnet_name      = string,
+    }))
   }))
   description = "Information of instances you want to create."
   default     = {
@@ -45,11 +54,13 @@ variable "computes" {
       assign_public_ip        = false
       fd_index                = null
       shape                   = null
+      shape_config            = null
       network_security_groups = []
       subnet_name             = null
       source_type             = null
       source                  = null
       defined_tags            = {}
+      additional_vnic         = []
     }
   }
 }
