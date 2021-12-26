@@ -28,7 +28,7 @@ computes = {
     subnet_name             = "public-subnet"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
-    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "no"}
+    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "yes"}
     additional_vnic         = [{
       private_ip       = "10.1.1.10"
       assign_public_ip = false
