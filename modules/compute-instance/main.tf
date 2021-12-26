@@ -57,6 +57,15 @@ resource "oci_core_instance" "this" {
     source_type = each.value.source_type
     source_id   = each.value.source
   }
+
+  dynamic "shape_config" {
+    for_each = each.value.shape_config != null ? {shape_config: each.value.shape_config} : {}
+
+    content {
+      memory_in_gbs = shape_config.value.memory_in_gbs
+      ocpus         = shape_config.value.ocpus
+    }
+  }
 }
 
 locals {
