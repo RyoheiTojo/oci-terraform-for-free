@@ -38,6 +38,11 @@ variable "computes" {
     source_type             = string,
     source                  = string,
     defined_tags            = map(string),
+    additional_vnic         = list(object({
+      private_ip       = string,
+      assign_public_ip = bool,
+      subnet_name      = string,
+    }))
   }))
   description = "Information of instances you want to create."
   default     = {
@@ -50,6 +55,7 @@ variable "computes" {
       source_type             = null
       source                  = null
       defined_tags            = {}
+      additional_vnic         = []
     }
   }
 }

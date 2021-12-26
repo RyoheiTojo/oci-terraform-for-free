@@ -31,6 +31,11 @@ variable "computes" {
     source_type             = string,
     source                  = string,
     defined_tags            = map(string),
+    additional_vnic         = list(object({
+      private_ip       = string,
+      assign_public_ip = bool,
+      subnet_name      = string,
+    }))
   }))
   description = "Computes list"
   default = {
@@ -43,6 +48,7 @@ variable "computes" {
       source_type             = null
       subnet_name             = null
       defined_tags            = {}
+      additional_vnic         = []
     }
   }
 }

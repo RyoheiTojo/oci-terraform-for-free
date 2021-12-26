@@ -58,3 +58,22 @@ resource "oci_core_instance" "this" {
     source_id   = each.value.source
   }
 }
+
+locals {
+  flatten_vnics = flatten([
+    for compute_name, compute_data in var.computes: {
+      for vnic in compute_data.additional_vnic: "${compute_name}-${vnic.private_ip}"=>{compute: compute_name, private_ip: vnic.private_ip, assign_public_ip: vnic.assign_public_ip, subnet_name: vnic.subnet_name}
+    }
+  ])
+}
+
+resource "oci_core_vnic_attachment" "this" {
+  for_each = local.flatten_vnics
+
+  create_vnic_details {
+      subnet_id = [for s in data.oci_core_subnets.this.subnets: s.id if s.display_name == each.value.subnet_name][0]
+      assign_public_ip = each.value.assign_public_ip
+      private_ip = each.value.private_ip
+  }
+  instance_id = [for k,v in oci_core_instance.this: v.id if k == each.value.compute][0]
+}
