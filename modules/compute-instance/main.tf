@@ -64,7 +64,7 @@ locals {
     for compute_name, compute_data in var.computes: {
       for vnic in compute_data.additional_vnic: "${compute_name}-${vnic.private_ip}"=>{compute: compute_name, private_ip: vnic.private_ip, assign_public_ip: vnic.assign_public_ip, subnet_name: vnic.subnet_name}
     }
-  ])
+  ])[0]
 }
 
 resource "oci_core_vnic_attachment" "this" {
