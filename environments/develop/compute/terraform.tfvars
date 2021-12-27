@@ -35,5 +35,18 @@ computes = {
       assign_public_ip = false
       subnet_name      = "private-subnet"
     }]
+  },
+  testserver1 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.E2.1.Micro"
+    shape_config            = null
+    network_security_groups = ["private-subnet-nsg"]
+    private_ip              = "10.1.1.20",
+    subnet_name             = "private-subnet"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
+    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "no"}
+    additional_vnic         = []
   }
 }

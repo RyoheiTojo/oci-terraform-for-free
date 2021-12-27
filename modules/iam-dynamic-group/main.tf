@@ -7,11 +7,6 @@ terraform {
   }
 }
 
-data "oci_identity_compartments" "this" {
-  compartment_id = var.tenancy_ocid
-  compartment_id_in_subtree = true
-}
-
 resource "oci_identity_dynamic_group" "this" {
   for_each = var.dynamic_groups
 
@@ -27,6 +22,6 @@ resource "oci_identity_policy" "this" {
 
   name           = "${each.key}-policy"
   description    = each.value.description
-  compartment_id = [for c in data.oci_identity_compartments.this.compartments: c.id if c.name == each.value.compartment_name][0]
+  compartment_id = var.tenancy_ocid
   statements     = split("\n", templatefile("${path.module}/${each.value.statements_tpl_path}", {group_name: each.key, compartment_name: each.value.compartment_name}))
 }
