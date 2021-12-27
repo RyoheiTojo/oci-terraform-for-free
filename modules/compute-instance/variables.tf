@@ -38,6 +38,7 @@ variable "computes" {
       ocpus         = number,
     })
     network_security_groups = list(string),
+    private_ip              = string,
     subnet_name             = string, # Note: subnet's display_name has to be unique. consider alternative key.
     source_type             = string,
     source                  = string,
@@ -56,6 +57,7 @@ variable "computes" {
       shape                   = null
       shape_config            = null
       network_security_groups = []
+      private_ip              = null
       subnet_name             = null
       source_type             = null
       source                  = null

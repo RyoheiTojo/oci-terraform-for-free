@@ -19,12 +19,13 @@ ad_index = 2 # AD-3
 # shape_config = {memory_in_gbs: 24, ocpus: 4} * MAX
 
 computes = {
-  test1 = {
+  maintenance = {
     assign_public_ip        = true
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 12, ocpus: 2}
     network_security_groups = ["public-subnet-nsg"]
+    private_ip              = "10.1.0.10",
     subnet_name             = "public-subnet"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
