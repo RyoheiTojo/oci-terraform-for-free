@@ -53,6 +53,10 @@ resource "oci_core_instance" "this" {
     nsg_ids          = [for nsg in data.oci_core_network_security_groups.this.network_security_groups: nsg.id if contains(each.value.network_security_groups, nsg.display_name)]
     private_ip       = each.value.private_ip
   }
+  
+  agent_config {
+    is_management_disabled = true
+  }
 
   source_details {
     source_type = each.value.source_type
