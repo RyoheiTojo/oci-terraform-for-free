@@ -19,12 +19,13 @@ ad_index = 2 # AD-3
 # shape_config = {memory_in_gbs: 24, ocpus: 4} * MAX
 
 computes = {
-  test1 = {
+  maintenance = {
     assign_public_ip        = true
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 12, ocpus: 2}
     network_security_groups = ["public-subnet-nsg"]
+    private_ip              = "10.1.0.10",
     subnet_name             = "public-subnet"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
@@ -34,5 +35,18 @@ computes = {
       assign_public_ip = false
       subnet_name      = "private-subnet"
     }]
+  },
+  testserver1 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.E2.1.Micro"
+    shape_config            = null
+    network_security_groups = ["private-subnet-nsg"]
+    private_ip              = "10.1.1.20",
+    subnet_name             = "private-subnet"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
+    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "no"}
+    additional_vnic         = []
   }
 }

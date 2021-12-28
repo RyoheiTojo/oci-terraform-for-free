@@ -51,6 +51,11 @@ resource "oci_core_instance" "this" {
     subnet_id        = [for s in data.oci_core_subnets.this.subnets: s.id if s.display_name == each.value.subnet_name][0]
     assign_public_ip = each.value.assign_public_ip
     nsg_ids          = [for nsg in data.oci_core_network_security_groups.this.network_security_groups: nsg.id if contains(each.value.network_security_groups, nsg.display_name)]
+    private_ip       = each.value.private_ip
+  }
+  
+  agent_config {
+    is_management_disabled = true
   }
 
   source_details {

@@ -31,6 +31,7 @@ variable "computes" {
       ocpus         = number,
     })
     network_security_groups = list(string),
+    private_ip              = string,
     subnet_name             = string,
     source_type             = string,
     source                  = string,
@@ -47,6 +48,7 @@ variable "computes" {
       assign_public_ip        = false
       fd_index                = null
       network_security_groups = []
+      private_ip              = null
       shape                   = null
       shape_config            = null
       source                  = null
