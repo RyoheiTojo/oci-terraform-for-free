@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.13"
+  required_version = ">= 1.00"
   required_providers {
     oci = {
       version = ">= 3.27"
