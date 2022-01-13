@@ -34,6 +34,10 @@ module "iam_group" {
   user_ids       = {for k,v in module.iam_users.this: k=>v.id}
   groups         = var.groups
   membership     = transpose({for k,v in var.users: k=>v.groups})
+
+  depends_on = [
+    module.iam_compartment
+  ]
 }
 
 module "iam_tag" {
@@ -49,4 +53,8 @@ module "iam_dynamic_group" {
 
   tenancy_ocid   = var.tenancy_ocid
   dynamic_groups = var.dynamic_groups
+
+  depends_on = [
+    module.iam_compartment
+  ]
 }
