@@ -14,8 +14,14 @@ variable "groups" {
   default = null
 }
 
-variable "membership_ids" {
-  type = map(list(string)) # {groupA: ['<userA OCID>', '<userB OCID>']}
-  description = "Groupname and userids mappings"
+variable "user_ids" {
+  type = map(string)
+  description = "Map of user OCID."
+  default = {}
+}
+
+variable "membership" {
+  type = map(list(string)) # {groupA: ['<userA>', '<userB>']}
+  description = "Groupname and username mappings"
   default     = {}
 }
