@@ -4,9 +4,9 @@ variable "tenancy_ocid" {
   default = null
 }
 
-variable "compartment_name" {
+variable "compartment_id" {
   type = string
-  description = "Compartment name"
+  description = "Compartment OCID"
   default = null
 }
 

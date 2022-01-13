@@ -1,12 +1,3 @@
-terraform {
-  required_version = ">= 0.12"
-  required_providers {
-    oci = {
-      version = ">= 3.27"
-    }
-  }
-}
-
 resource "oci_identity_group" "this" {
   for_each = var.groups
 
@@ -16,14 +7,14 @@ resource "oci_identity_group" "this" {
 }
 
 locals {
-  groupid_userid_list = [for k,v in var.membership_ids: setproduct([oci_identity_group.this[k].id], v)][0]
+  group_user_list = [for k,v in var.membership: setproduct([k], v)][0]
 }
 
 resource "oci_identity_user_group_membership" "this" {
-  count    = length(local.groupid_userid_list)
+  count    = length(local.group_user_list)
 
-  user_id  = local.groupid_userid_list[count.index][1]
-  group_id = local.groupid_userid_list[count.index][0]
+  group_id = oci_identity_group.this[local.group_user_list[count.index][0]].id
+  user_id  = var.user_ids[local.group_user_list[count.index][1]]
 }
 
 resource "oci_identity_policy" "this" {

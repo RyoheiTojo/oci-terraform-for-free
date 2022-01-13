@@ -1,8 +1,8 @@
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.14"
   required_providers {
     oci = {
-      version = ">= 3.27"
+      source  = "hashicorp/oci"
     }
   }
 }
@@ -31,16 +31,21 @@ module "iam_users" {
 module "iam_group" {
   source         = "../../../modules/iam-group"
   tenancy_ocid   = var.tenancy_ocid
+  user_ids       = {for k,v in module.iam_users.this: k=>v.id}
   groups         = var.groups
-  membership_ids = transpose({for k,v in var.users: module.iam_users.this[k].id=>v.groups})
+  membership     = transpose({for k,v in var.users: k=>v.groups})
+
+  depends_on = [
+    module.iam_compartment
+  ]
 }
 
 module "iam_tag" {
   source = "../../../modules/iam-tag"
 
-  tenancy_ocid     = var.tenancy_ocid
-  compartment_name = var.compartment.name
-  tags             = var.tags
+  tenancy_ocid   = var.tenancy_ocid
+  compartment_id = module.iam_compartment.this.id
+  tags           = var.tags
 }
 
 module "iam_dynamic_group" {
@@ -48,4 +53,8 @@ module "iam_dynamic_group" {
 
   tenancy_ocid   = var.tenancy_ocid
   dynamic_groups = var.dynamic_groups
+
+  depends_on = [
+    module.iam_compartment
+  ]
 }
