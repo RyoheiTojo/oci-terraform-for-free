@@ -3,37 +3,46 @@ internet_gateway_name = "dev_internet_gateway"
 service_gateway_name  = "dev_service_gateway"
 
 route_tables = {
-  public_route_table = {
+  public = {
     internet_gateway_destinations = ["0.0.0.0/0"]
     service_gateway_destinations  = []
   },
-  inner_route_table = {
+  managements = {
+    internet_gateway_destinations = []
+    service_gateway_destinations  = ["all-iad-services-in-oracle-services-network"] # format: all-<region>-services-in-oracle-services-network
+  },
+  applications = {
     internet_gateway_destinations = []
     service_gateway_destinations  = ["all-iad-services-in-oracle-services-network"] # format: all-<region>-services-in-oracle-services-network
   }
 }
 
 vcn = {
-  name             = "dev_vcn"
+  name             = "vcn"
   cidr_block       = "10.1.0.0/16"
   compartment_name = "dev"
 }
 
 subnets = {
-  public-subnet = {
+  public = {
     cidr_block       = "10.1.0.0/24"
     is_public        = true
-    route_table_name = "public_route_table"
+    route_table_name = "public"
   },
-  private-subnet = {
+  applications = {
     cidr_block       = "10.1.1.0/24"
     is_public        = false
-    route_table_name = "inner_route_table"
+    route_table_name = "applications"
+  },
+  managements = {
+    cidr_block       = "10.1.2.0/24"
+    is_public        = false
+    route_table_name = "managements"
   }
 }
 
 network_security_groups = {
-  public-subnet-nsg = [{
+  public = [{
     direction    = "INGRESS"
     src_type     = "CIDR"
     src          = "0.0.0.0/0"
@@ -45,5 +54,6 @@ network_security_groups = {
     stateless    = false
     icmp_options = null
   }],
-  private-subnet-nsg = [],
+  applications = [],
+  managements  = [],
 }
