@@ -10,18 +10,18 @@ users = {
 dev_admin = { 
   description = "Administrator for dev compartment." 
   email       = null
-  groups      = ["dev_admin_group"]
+  groups      = ["dev_admin"]
 } }
 
 groups = { 
-dev_admin_group = {
+dev_admin = {
   compartment_name    = "dev"
   description         = "Administrator for dev compartment"
   statements_tpl_path = "./templates/administrator_policy.tftpl"
 } }
 
 tags = { 
-  dev_tag_namespace = { 
+  dev = { 
     description  = "TagNamespace for dev"
     defined_tags = {
       use-oci-cli = {
@@ -39,10 +39,10 @@ tags = {
 }
 
 dynamic_groups = {
-  oci-client-group = {
+  oci-client = {
     compartment_name    = "dev"
     description         = "Dynamic group for OCI-CLI"
-    matching_rule       = "tag.dev_tag_namespace.use-oci-cli.value='yes'"
+    matching_rule       = "tag.dev.use-oci-cli.value='yes'"
     statements_tpl_path = "./templates/use_oci_cli_group_policy.tftpl"
   }
 }

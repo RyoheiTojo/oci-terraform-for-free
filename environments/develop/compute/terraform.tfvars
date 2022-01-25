@@ -3,7 +3,7 @@ ssh_authorized_keys = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCJedWKkobbk4zk8IwYT
 user_data           = "I2Nsb3VkLWNvbmZpZw0KdGltZXpvbmU6IEFzaWEvVG9reW8NCmxvY2FsZTogamFfSlAudXRmOCANCnJ1bmNtZDoNCiAgLSBzZXRlbmZvcmNlIDANCiAgLSBzZWQgLWkgLWUgJ3MvXlxTRUxJTlVYPWVuZm9yY2luZy9TRUxJTlVYPWRpc2FibGVkLycgL2V0Yy9zZWxpbnV4L2NvbmZpZw0KICAtIHN5c3RlbWN0bCByZXN0YXJ0IHJzeXNsb2ciDQpwb3dlcl9zdGF0ZTogDQogIGRlbGF5OiAiKzEwIiANCiAgbW9kZTogcmVib290DQogIG1lc3NhZ2U6IEJ5ZSBCeWUgDQogIHRpbWVvdXQ6IDMw"
 
 compartment_name = "dev"
-vcn_name = "dev_vcn"
+vcn_name = "dev"
 ad_index = 2 # AD-3
 
 # Memo: 
@@ -24,29 +24,68 @@ computes = {
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 12, ocpus: 2}
-    network_security_groups = ["public-subnet-nsg"]
+    network_security_groups = ["public"]
     private_ip              = "10.1.0.10",
-    subnet_name             = "public-subnet"
+    subnet_name             = "public"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
-    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "yes"}
+    defined_tags            = {"dev.use-oci-cli" = "yes"}
     additional_vnic         = [{
       private_ip       = "10.1.1.10"
       assign_public_ip = false
-      subnet_name      = "private-subnet"
+      subnet_name      = "managements"
     }]
   },
-  testserver1 = {
+  manager01 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.A1.Flex"
+    shape_config            = {memory_in_gbs: 6, ocpus: 1}
+    network_security_groups = ["managements"]
+    private_ip              = "10.1.2.20",
+    subnet_name             = "managements"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
+    defined_tags            = {"dev.use-oci-cli" = "no"}
+    additional_vnic         = []
+  },
+  manager02 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.A1.Flex"
+    shape_config            = {memory_in_gbs: 6, ocpus: 1}
+    network_security_groups = ["managements"]
+    private_ip              = "10.1.2.21",
+    subnet_name             = "managements"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
+    defined_tags            = {"dev.use-oci-cli" = "no"}
+    additional_vnic         = []
+  },
+  application01 = {
     assign_public_ip        = false
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.E2.1.Micro"
     shape_config            = null
-    network_security_groups = ["private-subnet-nsg"]
+    network_security_groups = ["applications"]
     private_ip              = "10.1.1.20",
-    subnet_name             = "private-subnet"
+    subnet_name             = "applications"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
-    defined_tags            = {"dev_tag_namespace.use-oci-cli" = "no"}
+    defined_tags            = {"dev.use-oci-cli" = "no"}
+    additional_vnic         = []
+  },
+  application02 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.E2.1.Micro"
+    shape_config            = null
+    network_security_groups = ["applications"]
+    private_ip              = "10.1.1.21",
+    subnet_name             = "applications"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
+    defined_tags            = {"dev.use-oci-cli" = "no"}
     additional_vnic         = []
   }
 }
