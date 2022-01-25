@@ -31,7 +31,7 @@ computes = {
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
     defined_tags            = {"dev.use-oci-cli" = "yes"}
     additional_vnic         = [{
-      private_ip       = "10.1.1.10"
+      private_ip       = "10.1.2.10"
       assign_public_ip = false
       subnet_name      = "managements"
     }]
