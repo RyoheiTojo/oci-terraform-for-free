@@ -40,7 +40,7 @@ resource "oci_core_instance" "this" {
   display_name        = each.key
   fault_domain        = each.value.fd_index != null ? data.oci_identity_fault_domains.this.fault_domains[each.value.fd_index].name : null
   shape               = each.value.shape
-  defined_tags        = each.value.defined_tags
+  defined_tags        = merge(each.value.defined_tags, {"Oracle-Tags.CreatedBy" = "", "Oracle-Tags.CreatedOn" = ""})
 
   metadata = {
     ssh_authorized_keys = var.ssh_authorized_keys
@@ -52,6 +52,7 @@ resource "oci_core_instance" "this" {
     assign_public_ip = each.value.assign_public_ip
     nsg_ids          = [for nsg in data.oci_core_network_security_groups.this.network_security_groups: nsg.id if contains(each.value.network_security_groups, nsg.display_name)]
     private_ip       = each.value.private_ip
+    defined_tags     = {"Oracle-Tags.CreatedBy" = "", "Oracle-Tags.CreatedOn" = ""}
   }
   
   agent_config {
@@ -70,6 +71,15 @@ resource "oci_core_instance" "this" {
       memory_in_gbs = shape_config.value.memory_in_gbs
       ocpus         = shape_config.value.ocpus
     }
+  }
+
+  lifecycle {
+    ignore_changes = [ 
+      defined_tags["Oracle-Tags.CreatedBy"],
+      defined_tags["Oracle-Tags.CreatedOn"],
+      create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"],
+      create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"]
+    ]
   }
 }
 

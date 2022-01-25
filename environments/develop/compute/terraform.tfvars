@@ -37,12 +37,12 @@ computes = {
     }]
   },
   manager01 = {
-    assign_public_ip        = true
+    assign_public_ip        = false
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 6, ocpus: 1}
     network_security_groups = ["managements"]
-    private_ip              = "10.1.1.20",
+    private_ip              = "10.1.2.20",
     subnet_name             = "managements"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
@@ -50,12 +50,12 @@ computes = {
     additional_vnic         = []
   },
   manager02 = {
-    assign_public_ip        = true
+    assign_public_ip        = false
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 6, ocpus: 1}
     network_security_groups = ["managements"]
-    private_ip              = "10.1.1.21",
+    private_ip              = "10.1.2.21",
     subnet_name             = "managements"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
