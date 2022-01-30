@@ -54,6 +54,28 @@ network_security_groups = {
     stateless    = false
     icmp_options = null
   }],
-  applications = [],
+  applications = [{
+    direction    = "INGRESS"
+    src_type     = "NSG"
+    src          = "managements"
+    protocol     = "TCP"
+    src_port     = null
+    dest_type    = null
+    dest         = null
+    dest_port    = [{min: 8507, max: 8507}] # geth http.port
+    stateless    = false
+    icmp_options = null
+  },{
+    direction    = "INGRESS"
+    src_type     = "NSG"
+    src          = "public"
+    protocol     = "TCP"
+    src_port     = null
+    dest_type    = null
+    dest         = null
+    dest_port    = [{min: 8507, max: 8507}] # geth http.port
+    stateless    = false
+    icmp_options = null
+  }],
   managements  = [],
 }
