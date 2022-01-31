@@ -62,7 +62,7 @@ network_security_groups = {
     src_port     = null
     dest_type    = null
     dest         = null
-    dest_port    = [{min: 8507, max: 8507}] # geth http.port
+    dest_port    = [{min: 8507, max: 8508}] # geth http.port
     stateless    = false
     icmp_options = null
   },{
@@ -73,7 +73,7 @@ network_security_groups = {
     src_port     = null
     dest_type    = null
     dest         = null
-    dest_port    = [{min: 8507, max: 8507}] # geth http.port
+    dest_port    = [{min: 8507, max: 8508}] # geth http.port
     stateless    = false
     icmp_options = null
   }],
