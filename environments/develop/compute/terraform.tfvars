@@ -37,7 +37,7 @@ computes = {
     }]
   },
   application01 = {
-    assign_public_ip        = false
+    assign_public_ip        = true
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 12, ocpus: 2}
