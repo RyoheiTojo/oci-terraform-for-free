@@ -37,17 +37,21 @@ computes = {
     }]
   },
   application01 = {
-    assign_public_ip        = false
+    assign_public_ip        = true
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
     shape_config            = {memory_in_gbs: 12, ocpus: 2}
     network_security_groups = ["applications"]
-    private_ip              = "10.1.1.20",
-    subnet_name             = "applications"
+    private_ip              = "10.1.0.11",
+    subnet_name             = "public"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
     defined_tags            = {"dev.use-oci-cli" = "no"}
-    additional_vnic         = []
+    additional_vnic         = [{
+      private_ip       = "10.1.1.20"
+      assign_public_ip = false
+      subnet_name      = "applications"
+    }]
   },
   manager01 = {
     assign_public_ip        = false
