@@ -36,53 +36,40 @@ computes = {
       subnet_name      = "managements"
     }]
   },
-  manager01 = {
+  application01 = {
     assign_public_ip        = false
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
-    shape_config            = {memory_in_gbs: 6, ocpus: 1}
+    shape_config            = {memory_in_gbs: 12, ocpus: 2}
+    network_security_groups = ["applications"]
+    private_ip              = "10.1.1.20",
+    subnet_name             = "applications"
+    source_type             = "image"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
+    defined_tags            = {"dev.use-oci-cli" = "no"}
+    additional_vnic         = []
+  },
+  manager01 = {
+    assign_public_ip        = false
+    fd_index                = null # Feeling lucky.
+    shape                   = "VM.Standard.E2.1.Micro"
+    shape_config            = null
     network_security_groups = ["managements"]
     private_ip              = "10.1.2.20",
     subnet_name             = "managements"
     source_type             = "image"
-    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
     defined_tags            = {"dev.use-oci-cli" = "no"}
     additional_vnic         = []
   },
   manager02 = {
     assign_public_ip        = false
     fd_index                = null # Feeling lucky.
-    shape                   = "VM.Standard.A1.Flex"
-    shape_config            = {memory_in_gbs: 6, ocpus: 1}
+    shape                   = "VM.Standard.E2.1.Micro"
+    shape_config            = null
     network_security_groups = ["managements"]
     private_ip              = "10.1.2.21",
     subnet_name             = "managements"
-    source_type             = "image"
-    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
-    defined_tags            = {"dev.use-oci-cli" = "no"}
-    additional_vnic         = []
-  },
-  application01 = {
-    assign_public_ip        = false
-    fd_index                = null # Feeling lucky.
-    shape                   = "VM.Standard.E2.1.Micro"
-    shape_config            = null
-    network_security_groups = ["applications"]
-    private_ip              = "10.1.1.20",
-    subnet_name             = "applications"
-    source_type             = "image"
-    source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
-    defined_tags            = {"dev.use-oci-cli" = "no"}
-    additional_vnic         = []
-  },
-  application02 = {
-    assign_public_ip        = false
-    fd_index                = null # Feeling lucky.
-    shape                   = "VM.Standard.E2.1.Micro"
-    shape_config            = null
-    network_security_groups = ["applications"]
-    private_ip              = "10.1.1.21",
-    subnet_name             = "applications"
     source_type             = "image"
     source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
     defined_tags            = {"dev.use-oci-cli" = "no"}
