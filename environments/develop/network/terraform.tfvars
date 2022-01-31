@@ -53,6 +53,17 @@ network_security_groups = {
     dest_port    = [{min: 22, max: 22}]
     stateless    = false
     icmp_options = null
+  },{
+    direction    = "INGRESS"
+    src_type     = "NSG"
+    src          = "public"
+    protocol     = "ALL"
+    src_port     = null
+    dest_type    = null
+    dest         = null
+    dest_port    = null
+    stateless    = false
+    icmp_options = null
   }],
   applications = [{
     direction    = "INGRESS"
