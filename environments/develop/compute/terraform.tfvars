@@ -80,3 +80,11 @@ computes = {
     additional_vnic         = []
   }
 }
+
+block_volumes = {
+  application01-01 = {
+    size_in_gbs = 100
+    source_id   = null
+    source_type = null
+  }
+}

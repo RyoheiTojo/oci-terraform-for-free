@@ -23,3 +23,12 @@ module "compute-instance" {
   user_data           = var.user_data
   computes            = var.computes
 }
+
+module "compute-blockvolume" {
+  source       = "../../../modules/compute-blockvolume"
+
+  tenancy_ocid        = var.tenancy_ocid
+  compartment_name    = var.compartment_name
+  ad_index            = var.ad_index
+  block_volumes       = var.block_volumes
+}
