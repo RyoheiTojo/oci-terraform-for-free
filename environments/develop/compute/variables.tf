@@ -40,7 +40,8 @@ variable "computes" {
       private_ip       = string,
       assign_public_ip = bool,
       subnet_name      = string,
-    }))
+    })),
+    block_volumes           = list(string)
   }))
   description = "Computes list"
   default = {
@@ -56,6 +57,23 @@ variable "computes" {
       subnet_name             = null
       defined_tags            = {}
       additional_vnic         = []
+      block_volumes           = []
+    }
+  }
+}
+
+variable "block_volumes" {
+  type = map(object({
+      size_in_gbs  = number,
+      source_id    = string,
+      source_type  = string,
+  }))
+  description = "Block volumes definitions"
+  default = {
+    "default_block_volume" = {
+      size_in_gbs  = 1
+      source_id    = null
+      source_type  = null
     }
   }
 }

@@ -47,7 +47,8 @@ variable "computes" {
       private_ip       = string,
       assign_public_ip = bool,
       subnet_name      = string,
-    }))
+    })),
+    block_volumes           = list(string)
   }))
   description = "Information of instances you want to create."
   default     = {
@@ -63,7 +64,16 @@ variable "computes" {
       source                  = null
       defined_tags            = {}
       additional_vnic         = []
+      block_volumes           = []
     }
+  }
+}
+
+variable "blockvolume_ids" {
+  type = map(string) 
+  description = "Blockvolume OCIDs"
+  default = {
+    "default_blockvolume" = null
   }
 }
 
