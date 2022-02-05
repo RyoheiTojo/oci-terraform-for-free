@@ -22,6 +22,7 @@ module "compute-instance" {
   ssh_authorized_keys = var.ssh_authorized_keys
   user_data           = var.user_data
   computes            = var.computes
+  blockvolume_ids     = {for k,v in module.compute-blockvolume.this: k=>v.id}
 }
 
 module "compute-blockvolume" {

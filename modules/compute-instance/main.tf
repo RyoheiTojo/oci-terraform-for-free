@@ -101,3 +101,19 @@ resource "oci_core_vnic_attachment" "this" {
   }
   instance_id = [for k,v in oci_core_instance.this: v.id if k == local.flatten_vnics[count.index].compute][0]
 }
+
+locals {
+  flatten_blockvolumes = flatten([
+    for compute_name, compute_data in var.computes: [
+      for blockvolume_name in compute_data.block_volumes: {compute: compute_name, blockvolume: blockvolume_name}
+    ]
+  ])
+}
+resource "oci_core_volume_attachment" "this" {
+  count = length(local.flatten_blockvolumes)
+
+  attachment_type = "paravirtualized"
+  display_name    = local.flatten_blockvolumes[count.index].blockvolume
+  instance_id     = [for k,v in oci_core_instance.this: v.id if k == local.flatten_blockvolumes[count.index].compute][0]
+  volume_id       = var.blockvolume_ids[local.flatten_blockvolumes[count.index].blockvolume]
+}

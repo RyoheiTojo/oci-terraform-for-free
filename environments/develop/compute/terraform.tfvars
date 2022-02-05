@@ -35,6 +35,7 @@ computes = {
       assign_public_ip = false
       subnet_name      = "managements"
     }]
+    block_volumes           = []
   },
   application01 = {
     assign_public_ip        = true
@@ -52,6 +53,8 @@ computes = {
       assign_public_ip = false
       subnet_name      = "applications"
     }]
+    block_volumes           = ["application01-01"]
+
   },
   manager01 = {
     assign_public_ip        = false
@@ -65,6 +68,7 @@ computes = {
     source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
     defined_tags            = {"dev.use-oci-cli" = "no"}
     additional_vnic         = []
+    block_volumes           = []
   },
   manager02 = {
     assign_public_ip        = false
@@ -78,6 +82,7 @@ computes = {
     source                  = "ocid1.image.oc1.iad.aaaaaaaaw2wavtqrd3ynbrzabcnrs77pinccp55j2gqitjrrj2vf65sqj5kq" # Free (Oracle-Linux-7.9-2021.04.09-0)
     defined_tags            = {"dev.use-oci-cli" = "no"}
     additional_vnic         = []
+    block_volumes           = []
   }
 }
 

@@ -40,7 +40,8 @@ variable "computes" {
       private_ip       = string,
       assign_public_ip = bool,
       subnet_name      = string,
-    }))
+    })),
+    block_volumes           = list(string)
   }))
   description = "Computes list"
   default = {
@@ -56,6 +57,7 @@ variable "computes" {
       subnet_name             = null
       defined_tags            = {}
       additional_vnic         = []
+      block_volumes           = []
     }
   }
 }
