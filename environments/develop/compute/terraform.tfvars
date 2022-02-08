@@ -35,7 +35,7 @@ computes = {
       assign_public_ip = false
       subnet_name      = "managements"
     }]
-    block_volumes           = ["maintenance"]
+    block_volumes           = []
   },
   application01 = {
     assign_public_ip        = true
@@ -88,11 +88,6 @@ computes = {
 
 block_volumes = {
   application01-01 = {
-    size_in_gbs = 100
-    source_id   = null
-    source_type = null
-  },
-  maintenance = {
     size_in_gbs = 100
     source_id   = null
     source_type = null
