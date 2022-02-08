@@ -42,7 +42,7 @@ subnets = {
 }
 
 network_security_groups = {
-  public = [{
+  public-applications = [{
     direction    = "INGRESS"
     src_type     = "CIDR"
     src          = "0.0.0.0/0"
@@ -64,7 +64,8 @@ network_security_groups = {
     dest_port    = [{min: 30303, max: 30303}]
     stateless    = false
     icmp_options = null
-  },{
+  }],
+  public = [{
     direction    = "INGRESS"
     src_type     = "CIDR"
     src          = "0.0.0.0/0"
@@ -73,17 +74,6 @@ network_security_groups = {
     dest_type    = null
     dest         = null
     dest_port    = [{min: 22, max: 22}]
-    stateless    = false
-    icmp_options = null
-  },{
-    direction    = "INGRESS"
-    src_type     = "NSG"
-    src          = "public"
-    protocol     = "ALL"
-    src_port     = null
-    dest_type    = null
-    dest         = null
-    dest_port    = null
     stateless    = false
     icmp_options = null
   }],
