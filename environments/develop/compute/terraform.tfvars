@@ -4,7 +4,7 @@ user_data           = "I2Nsb3VkLWNvbmZpZw0KdGltZXpvbmU6IEFzaWEvVG9reW8NCmxvY2FsZ
 
 compartment_name = "dev"
 vcn_name = "dev"
-ad_index = 2 # AD-3
+ad_index = 1 # AD-2
 
 # Memo: 
 # Free pattern1
@@ -19,34 +19,34 @@ ad_index = 2 # AD-3
 # shape_config = {memory_in_gbs: 24, ocpus: 4} * MAX
 
 computes = {
-  maintenance = {
-    assign_public_ip        = true
-    fd_index                = null # Feeling lucky.
-    shape                   = "VM.Standard.A1.Flex"
-    shape_config            = {memory_in_gbs: 12, ocpus: 2}
-    network_security_groups = ["public"]
-    private_ip              = "10.1.0.10",
-    subnet_name             = "public"
-    source_type             = "image"
-    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
-    defined_tags            = {"dev.use-oci-cli" = "yes"}
-    additional_vnic         = [{
-      private_ip       = "10.1.2.10"
-      assign_public_ip = false
-      subnet_name      = "managements"
-    }]
-    block_volumes           = []
-  },
+  # maintenance = {
+  #   assign_public_ip        = true
+  #   fd_index                = null # Feeling lucky.
+  #   shape                   = "VM.Standard.A1.Flex"
+  #   shape_config            = {memory_in_gbs: 12, ocpus: 2}
+  #   network_security_groups = ["public"]
+  #   private_ip              = "10.1.0.10",
+  #   subnet_name             = "public"
+  #   source_type             = "image"
+  #   source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
+  #   defined_tags            = {"dev.use-oci-cli" = "yes"}
+  #   additional_vnic         = [{
+  #     private_ip       = "10.1.2.10"
+  #     assign_public_ip = false
+  #     subnet_name      = "managements"
+  #   }]
+  #   block_volumes           = []
+  # },
   application01 = {
     assign_public_ip        = true
     fd_index                = null # Feeling lucky.
     shape                   = "VM.Standard.A1.Flex"
-    shape_config            = {memory_in_gbs: 12, ocpus: 2}
+    shape_config            = {memory_in_gbs: 24, ocpus: 4}
     network_security_groups = ["public-applications"]
     private_ip              = "10.1.0.11",
     subnet_name             = "public"
     source_type             = "image"
-    source                  = "ocid1.image.oc1.iad.aaaaaaaac6jy4yovh7u6k7qguocu2wroyllwybfro6cir5mz5lsfdy7gg2cq"
+    source                  = "ocid1.image.oc1.iad.aaaaaaaavlyslwoeu65h6d3zlli6cfp66ym44hmk5vsjbgfd3xbw2pwl6b2a" # Ubuntu for aarch64
     defined_tags            = {"dev.use-oci-cli" = "no"}
     additional_vnic         = [{
       private_ip       = "10.1.1.20"
